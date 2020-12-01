@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "OLED_Driver.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +65,8 @@ extern DMA_HandleTypeDef hdma_spi3_rx;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim9;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
@@ -254,10 +257,33 @@ void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
 
+  uint32_t tmp_flag = 0;
+  uint32_t temp;
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
+	tmp_flag =  __HAL_UART_GET_FLAG(&huart1,UART_FLAG_IDLE);
+	if((tmp_flag != RESET)){
+			__HAL_UART_CLEAR_IDLEFLAG(&huart1);
+		temp = huart1.Instance->SR;
+		temp = huart1.Instance->DR;
+		HAL_UART_DMAStop(&huart1);
+		temp  = hdma_usart1_rx.Instance->NDTR;
+		Uart_Recv1_Length =  Uart_Max_Length - temp;
+	//	Uart_Overflow1_Flag = 1;
+		OfflineCount = 0;
+//		CptOnline = True;
+//		if(Flag_Reception)
+//		{
+			AnalysisComputermsg(Uart_Recv1_Buf);
+			AnalysisFFT(Uart_Recv1_Buf);
+			AnalysisCommand(Uart_Recv1_Buf);
+//			AnalysisKey(Uart_Recv1_Buf);
+//		}
+		Uart_Recv1_Length = 0;
+		HAL_UART_Receive_DMA(&huart1,Uart_Recv1_Buf,Uart_Max_Length);
+	}
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -320,6 +346,34 @@ void DMA2_Stream3_IRQHandler(void)
   /* USER CODE BEGIN DMA2_Stream3_IRQn 1 */
 	
   /* USER CODE END DMA2_Stream3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 stream5 global interrupt.
+  */
+void DMA2_Stream5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream5_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA2_Stream5_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 stream7 global interrupt.
+  */
+void DMA2_Stream7_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream7_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream7_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  /* USER CODE BEGIN DMA2_Stream7_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream7_IRQn 1 */
 }
 
 /**

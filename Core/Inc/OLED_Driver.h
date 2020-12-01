@@ -138,6 +138,7 @@ extern "C" {
       void Write_Command(uint8_t data1,uint8_t typ);
 			
 			void Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t color);
+			void Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t color,uint8_t bk);
 			
 			void Set_DampColor(uint16_t color);
 			void Set_Wheel(uint16_t WheelPos);

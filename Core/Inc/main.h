@@ -145,6 +145,136 @@ void INTX_ENABLE(void);	//开启所有中断
 void MSR_MSP(u32 addr);	//设置堆栈地址
 
 #define MAKEWORD(low, high)		(((u8)(low)) | (((u8)(high)) << 8))
+typedef struct{
+	u8 autotimeset;
+	char addr[7];
+	u8 hour;
+	u8 min;
+	char hourc[3];
+	char minc[3];
+	u16 motionset;
+	u16 rgbcolor;
+	u16 rgbmode;
+	char uid[20];
+	u8 autoswdis;
+	u8 autoswtime;
+	char autoswtimec[3];
+	u8 fanswdis;
+}ConfigSet;
+extern ConfigSet set;
+	
+extern u8 UIDUpdate;
+extern u8 AddrUpdate;
+extern u8 CptOnline;
+extern u8 WiFiOnline;
+#define Radius 60
+#define RadiusC 56
+#define RadiusB 53
+#define HourRadius 30
+#define MinRadius 40
+#define SecRadius 50
+#define RLV Radius/2
+	
+#define SLEEPTIME    20*60
+void OFFLINE_Mode_In_Cust(const u8 *ch,u8 time);//time=10
+void SLEEP_Display(void);
+
+void OFFLINE_Mode_In(void);
+void OFFLINE_Mode_Out(void);
+void OFFLINE_Mode(void);
+
+void NORMAL_Mode_In(void);
+void NORMAL_Mode_Out(void);
+void NORMAL_Mode_Run(void);
+void NORMAL_Display(void);
+void NORMAL_Mode(void);
+
+void GAME_Mode_In(void);
+void GAME_Mode_Out(void);
+void GAME_Mode_Run(void);
+void GAME_Display(void);
+void GAME_Mode(void);
+
+void TIME_Mode_In(void);
+void TIME_Mode_Out(void);
+void TIME_Mode_Run(void);
+void TIME_Display(void);
+void TIME_Mode(void);
+
+void TIME_1_Mode_In(void);
+void TIME_1_Mode_Out(void);
+void TIME_1_Display(void);
+void TIME_1_Mode(void);
+
+void TIME_2_Mode_In(void);
+void TIME_2_Mode_Out(void);
+void TIME_2_Mode_Run(void);
+void TIME_2_Display(void);
+void TIME_2_Mode(void);
+
+void BILI_Mode_In(void);
+void BILI_Mode_Out(void);
+void BILI_Mode_Run(void);
+void BILI_Display(void);
+void BILI_Mode(void);
+
+void WEATH_Mode_In(void);
+void WEATH_Mode_Out(void);
+void WEATH_Mode_Run(void);
+void WEATH_Display(void);
+void WEATH_Mode(void);
+
+void MENU_Mode_In(void);
+void MENU_Mode_Out(void);
+void MENU_Mode_Run(void);
+void MENU_Display(void);
+void MENU_Mode(void);
+
+void WEATH_1_Mode_In(void);
+void WEATH_1_Mode_Out(void);
+void WEATH_1_Mode_Run(void);
+void WEATH_1_Display(void);
+void WEATH_1_Mode(void);
+
+void WEATH_2_Mode_In(void);
+void WEATH_2_Mode_Out(void);
+void WEATH_2_Mode_Run(void);
+void WEATH_2_Display(void);
+void WEATH_2_Mode(void);
+
+void MUSIC_Mode_In(void);
+void MUSIC_Mode_Out(void);
+void MUSIC_Mode_Run(void);
+void MUSIC_Display(void);
+void MUSIC_Mode(void);
+
+void WAITWIFI_Mode(void);
+
+void Display_Run(void);
+extern u16 Display_Mode;
+#define MODE_DEFALUT      	0x00
+#define MODE_OFFLINE    	  0x01
+#define MODE_DATE    	  		0x02
+#define MODE_MUSIC     			0x03
+#define MODE_NORMAL   		  0x04
+#define MODE_GAME  					0x05
+#define MODE_SHOW		  		0x06
+#define MODE_TIME		  		  0x07
+#define MODE_BILI		  		  0x08
+#define MODE_WEATH		  		  0x09
+#define MODE_WEATH_1		  		  0x0A
+#define MODE_WEATH_2		  		  0x0B
+#define MODE_DATE_1    	  		0x0C
+#define MODE_MENU    	  		0x0D
+
+#define Nebula True
+#define Dounsn False
+extern u16 Selectitem;
+extern u16 MenuLevel;
+extern u16 DATA_THEME;
+extern u16 DisSwRun;
+extern u16 SleepCount;
+extern u16 MenuCount;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

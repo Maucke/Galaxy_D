@@ -32,6 +32,7 @@
 #include "OLED_Driver.h"
 #include "OLED_GFX.h"
 #include "OLED_FFT.h"
+#include "OLED_UI.h"
 #include "string.h"
 #include "math.h"
 #include "stdio.h"
@@ -45,8 +46,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
-#define FLASH_SAVE_ADDR  0x0803D000 	//设置FLASH 保存地址(必须为4的倍数，且所在扇区,要大于本代码所占用到的扇区.
 
 /* USER CODE END PTD */
 
@@ -66,6 +65,11 @@ uint8_t OfflineCount = 6;
 uint8_t SystemActive = False;
 u8 datatemp[256] = {};
 u16 RandomX=30,RandomY=30;
+
+u16 Display_Mode = MODE_OFFLINE;
+u16 Current_Mode = MODE_OFFLINE;
+
+u16 DATA_THEME = MODE_DATE;
 
 #define Radius 60
 #define RadiusC 56
@@ -175,6 +179,7 @@ void SystemClock_Config(void);
 OLED_GFX oled = OLED_GFX();
 OLED_FFT fft = OLED_FFT();
 OLED_Animation motion = OLED_Animation();
+OLED_UI ui;
 
 typedef struct
 {
@@ -259,6 +264,7 @@ void KeyProcess(void)
 		savedata();
 	}
 }
+
 u16 fps = 0;
 char fpschar[20];
 /* USER CODE END 0 */
@@ -303,6 +309,8 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 	getdata();
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+  HAL_UART_Receive_DMA(&huart1,Uart_Recv1_Buf,Uart_Max_Length);
 	HAL_TIM_Base_Start_IT(&htim4);
 	HAL_TIM_Base_Start_IT(&htim5);
 	HAL_TIM_Base_Start_IT(&htim9);
@@ -310,9 +318,11 @@ int main(void)
   oled.Device_Init();
 	motion.OLED_AllMotion_Init();
 	FFT_Start();
+	InitData();
 //	DS3231_Time_Init(DS3231_Init_Buf);
 	SPI_Flash_Init();
 //	HAL_RTC_MspInit(&hrtc);
+		ui.SUI_In();
 //  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断一次
 
   /* USER CODE END 2 */
@@ -324,7 +334,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		MUSIC_Mode();
+//		MUSIC_Mode();
+		oled.Clear_Screen();
+		ui.SUIDataPrss();
+		ui.SUIMainShow();
+//		oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
+//		fps++;
+		oled.Refrash_Screen();
+//		HAL_Delay(10);
 //		
 //    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//拉低时钟开始数据传输
 //    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//拉低时钟开始数据传输
@@ -382,8 +399,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-uint8_t prt = 1;		
+uint8_t prt = 1;	
+int ip=0;
 void MUSIC_Mode(void)
 {
 	int i;
@@ -436,6 +453,7 @@ void MUSIC_Mode(void)
 		if(1)
 			oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
 		HAL_GPIO_TogglePin(SYSLED_GPIO_Port, SYSLED_Pin);
+		ui.SUIMainShow();
 		oled.Refrash_Screen();
 	}
 	HAL_Delay(1);
@@ -549,15 +567,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //			key2UpFlag = False;
 //		}
 		
+		DampAutoPos(0);
 	}
 	if (htim->Instance == htim5.Instance)
 	{
-		oled.Set_Wheel(TimeRun++%96);
 		oled.Calc_Color();
 		Flag_Refrash = True;
 	}
 	if (htim->Instance == htim9.Instance)
 	{
+		oled.Set_Wheel(TimeRun++%96);
 		sprintf(fpschar,"%d",fps);
 		fps = 0;
 //		HAL_RTC_GetTime(&RTC_Handler,&RTC_TimeStruct,RTC_FORMAT_BIN);
