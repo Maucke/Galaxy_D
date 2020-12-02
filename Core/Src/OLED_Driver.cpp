@@ -308,7 +308,7 @@ int fpscount = 0;
 char fpscountch[20];
 void OLED_Driver::Refrash_Screen(void)  {
   fpscount++;
-  OLED_SHFAny(0,0,fpscountch,19,0xffff);
+//  OLED_SHFAny(0,0,fpscountch,19,0xffff);
   RAM_Address(0);
   Write_Command(0x5C,0);
 //  for(i=0;i<;i++)  {
@@ -322,7 +322,11 @@ void OLED_Driver::Refrash_Screen(void)  {
 }
   
 void OLED_Driver::Clear_FpsCount(void)  {
-  sprintf(fpscountch,"%d",fpscount);
+	if(fpscount)
+		sprintf(fpscountch,"%d",fpscount);
+	else
+		sprintf(fpscountch,"--");
+		
 	fpscount=0;
 }
 
@@ -648,7 +652,11 @@ void OLED_Driver::OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color)
 	u8 c=0,j=0;
 	while(ch[j]!='\0')
 	{
-		c=ch[j]-'0';
+		if(ch[j]=='-')
+			c=10;
+		else
+			c=ch[j]-'0';
+		
 		switch(w)
 		{
 			case 4:OLED_HFAny(x,y,4,5,c,Defu_XF4x5,color);break;
