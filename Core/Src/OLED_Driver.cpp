@@ -495,7 +495,7 @@ void OLED_Driver::Draw_FastHLine(int16_t x, int16_t y, int16_t length) {
 		int16_t x0=x;
     do
     {
-        Draw_Pixel(x, y);   // ÖðµãÏÔÊ¾£¬Ãè³ö´¹Ö±Ïß
+        Draw_Pixel(x, y);   // é€ç‚¹æ˜¾ç¤ºï¼Œæå‡ºåž‚ç›´çº¿
         x++;
     }
     while(x0+length>=x);
@@ -506,7 +506,7 @@ void OLED_Driver::Draw_FastHLine(int16_t x, int16_t y, int16_t length,uint16_t c
 		int16_t x0=x;
     do
     {
-        Draw_Pixel(x, y,color);   // ÖðµãÏÔÊ¾£¬Ãè³ö´¹Ö±Ïß
+        Draw_Pixel(x, y,color);   // é€ç‚¹æ˜¾ç¤ºï¼Œæå‡ºåž‚ç›´çº¿
         x++;
     }
     while(x0+length>=x);
@@ -518,7 +518,7 @@ void OLED_Driver::Draw_FastVLine(int16_t x, int16_t y, int16_t length)  {
 		int16_t y0=y;
     do
     {
-        Draw_Pixel(x, y);   // ÖðµãÏÔÊ¾£¬Ãè³ö´¹Ö±Ïß
+        Draw_Pixel(x, y);   // é€ç‚¹æ˜¾ç¤ºï¼Œæå‡ºåž‚ç›´çº¿
         y++;
     }
     while(y0+length>=y);
@@ -529,7 +529,7 @@ void OLED_Driver::Draw_FastVLine(int16_t x, int16_t y, int16_t length,uint16_t c
 		int16_t y0=y;
     do
     {
-        Draw_Pixel(x, y,color);   // ÖðµãÏÔÊ¾£¬Ãè³ö´¹Ö±Ïß
+        Draw_Pixel(x, y,color);   // é€ç‚¹æ˜¾ç¤ºï¼Œæå‡ºåž‚ç›´çº¿
         y++;
     }
     while(y0+length>=y);
@@ -549,17 +549,17 @@ void OLED_Driver::Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t col
 		for(i=0;i<(w+1)/2;i++)
 		{
 			Factor = (ch[j*((w+1)/2)+i]&0xF0)>>4;
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+0,y+j,red1<<11|(green1<<5)|(blue1));
 			
 			Factor = (ch[j*((w+1)/2)+i]&0xF);
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+1,y+j,red1<<11|(green1<<5)|(blue1));
@@ -580,9 +580,9 @@ void OLED_Driver::Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t col
 		for(i=0;i<(w+1)/2;i++)
 		{
 			Factor = (ch[j*((w+1)/2)+i]&0xF0)>>4;
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+0,y+j,red1<<11|(green1<<5)|(blue1));
@@ -590,9 +590,9 @@ void OLED_Driver::Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t col
 				Draw_Pixel(x+i*2+0,y+j,bk);
 			
 			Factor = (ch[j*((w+1)/2)+i]&0xF);
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+1,y+j,red1<<11|(green1<<5)|(blue1));
@@ -615,17 +615,17 @@ void OLED_Driver::OLED_HFAny(int x,int y,int w,int h,u8 Num,const unsigned char 
 		for(i=0;i<(w+1)/2;i++)
 		{
 			Factor = (ch[Num*h*((w+1)/2)+j*((w+1)/2)+i]&0xF0)>>4;
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+0,y+j,red1<<11|(green1<<5)|(blue1));
 			
 			Factor = (ch[Num*h*((w+1)/2)+j*((w+1)/2)+i]&0xF);
-			red1 = red*Factor/16;
-			green1 = green*Factor/16;
-			blue1=blue*Factor/16;
+			red1 = red*(Factor+16)/32;
+			green1 = green*(Factor+16)/32;
+			blue1=blue*(Factor+16)/32;
 			
 			if(Factor)
 				Draw_Pixel(x+i*2+1,y+j,red1<<11|(green1<<5)|(blue1));
