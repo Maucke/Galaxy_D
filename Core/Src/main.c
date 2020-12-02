@@ -71,6 +71,30 @@ u16 Current_Mode = MODE_OFFLINE;
 
 u16 DATA_THEME = MODE_DATE;
 
+void MainSysRun()
+{
+	static int runcount=0;
+	if(Display_Mode==Current_Mode)
+	{
+		ui.SUIDataPrss();
+		return;
+	}
+	else
+	{
+		runcount++;
+		if(runcount==1)
+		{
+			ui.SUI_Out();
+		}
+		else if(runcount>60)
+		{
+			runcount=0;
+			Current_Mode=Display_Mode;
+			ui.SUI_In();
+		}
+	}
+}
+
 #define Radius 60
 #define RadiusC 56
 #define RadiusB 53
@@ -79,28 +103,28 @@ u16 DATA_THEME = MODE_DATE;
 #define SecRadius 50
 u16 ColorPointer[3];
 	
-uint8_t adc_dma_ok = 0;					//adcµÄDMA´«ÊäÍê³É±êÖ¾
-uint32_t adc_buf[NPT]={0};			//ÓÃÓÚ´æ´¢ADC×ª»»½á¹ûµÄÊı×é	
+uint8_t adc_dma_ok = 0;					//adcçš„DMAä¼ è¾“å®Œæˆæ ‡å¿—
+uint32_t adc_buf[NPT]={0};			//ç”¨äºå­˜å‚¨ADCè½¬æ¢ç»“æœçš„æ•°ç»„	
 
-static long lBufInArray[NPT];					//´«Èë¸øFFTµÄÊı×é
-//long lBufOutArray[NPT/2];				//FFTÊä³ö ÒòÎªÊä³ö½á¹ûÊÇ¶Ô³ÆµÄ ËùÒÔÎÒÃÇÖ»È¡ÁËÇ°ÃæµÄÒ»°ë
-//long lBufMagArray[NPT/2];				//Ã¿¸öÆµÂÊ¶ÔÓÃµÄ·ùÖµ
-static long lBufOutArray[NPT];				//FFTÊä³ö 
-long lBufMagArray[NPT];				//Ã¿¸öÆµÂÊ¶ÔÓÃµÄ·ùÖµ
+static long lBufInArray[NPT];					//ä¼ å…¥ç»™FFTçš„æ•°ç»„
+//long lBufOutArray[NPT/2];				//FFTè¾“å‡º å› ä¸ºè¾“å‡ºç»“æœæ˜¯å¯¹ç§°çš„ æ‰€ä»¥æˆ‘ä»¬åªå–äº†å‰é¢çš„ä¸€åŠ
+//long lBufMagArray[NPT/2];				//æ¯ä¸ªé¢‘ç‡å¯¹ç”¨çš„å¹…å€¼
+static long lBufOutArray[NPT];				//FFTè¾“å‡º 
+long lBufMagArray[NPT];				//æ¯ä¸ªé¢‘ç‡å¯¹ç”¨çš„å¹…å€¼
 
 void FFT_Start(void)
 {
-	/*Æô¶¯ADCµÄDMA´«Êä£¬ÅäºÏ¶¨Ê±Æ÷´¥·¢ADC×ª»»*/
+	/*å¯åŠ¨ADCçš„DMAä¼ è¾“ï¼Œé…åˆå®šæ—¶å™¨è§¦å‘ADCè½¬æ¢*/
 	HAL_ADC_Start_DMA(&hadc1, adc_buf, NPT);
-	/*¿ªÆô¶¨Ê±Æ÷£¬ÓÃÒç³öÊ±¼äÀ´´¥·¢ADC*/
+	/*å¼€å¯å®šæ—¶å™¨ï¼Œç”¨æº¢å‡ºæ—¶é—´æ¥è§¦å‘ADC*/
 	HAL_TIM_Base_Start(&htim3);
 }
 
 void FFT_Stop(void)
 {
-	/*Í£Ö¹ADCµÄDMA´«Êä*/
+	/*åœæ­¢ADCçš„DMAä¼ è¾“*/
 	HAL_ADC_Stop_DMA(&hadc1);
-	/*Í£Ö¹¶¨Ê±Æ÷*/
+	/*åœæ­¢å®šæ—¶å™¨*/
 	HAL_TIM_Base_Stop(&htim3);
 }
 
@@ -115,7 +139,7 @@ void GetPowerMag(void)
         lX  = (lBufOutArray[i] << 16) >> 16;
         lY  = (lBufOutArray[i] >> 16);
 			
-				//³ıÒÔ32768ÔÙ³Ë65536ÊÇÎªÁË·ûºÏ¸¡µãÊı¼ÆËã¹æÂÉ
+				//é™¤ä»¥32768å†ä¹˜65536æ˜¯ä¸ºäº†ç¬¦åˆæµ®ç‚¹æ•°è®¡ç®—è§„å¾‹
         X = NPT * ((float)lX) / 32768;
         Y = NPT * ((float)lY) / 32768;
         Mag = sqrt(X * X + Y * Y)*1.0/ NPT;
@@ -126,24 +150,24 @@ void GetPowerMag(void)
     }
 }
 
-/* º¯ÊıÃû³Æ£ºvoid FFT_Pro(void)
- * ¹¦ÄÜÃèÊö£ºFFT´¦Àíº¯Êı
- * ²ÎÊı£ºÎŞ
- * ·µ»ØÖµ£ºÎŞ
+/* å‡½æ•°åç§°ï¼švoid FFT_Pro(void)
+ * åŠŸèƒ½æè¿°ï¼šFFTå¤„ç†å‡½æ•°
+ * å‚æ•°ï¼šæ— 
+ * è¿”å›å€¼ï¼šæ— 
  */
 void FFT_Pro(void)
 {
 	uint16_t i = 0;
-	//Ìî³äÊı×é
+	//å¡«å……æ•°ç»„
 	for(i=0;i<NPT;i++)
 	{
-		//ÕâÀïÒòÎªµ¥Æ¬»úµÄADCÖ»ÄÜ²âÕıµÄµçÑ¹ ËùÒÔĞèÒªÇ°¼¶¼ÓÖ±Á÷Æ«Ö´
-		//¼ÓÈëÖ±Á÷Æ«Ö´ºó 1.25V ¶ÔÓ¦ADÖµÎª3103
+		//è¿™é‡Œå› ä¸ºå•ç‰‡æœºçš„ADCåªèƒ½æµ‹æ­£çš„ç”µå‹ æ‰€ä»¥éœ€è¦å‰çº§åŠ ç›´æµåæ‰§
+		//åŠ å…¥ç›´æµåæ‰§å 1.25V å¯¹åº”ADå€¼ä¸º3103
 		lBufInArray[i] = ((signed short)(adc_buf[i])-1551) << 18;		
 	}
-	//256µãFFT±ä»»
+	//256ç‚¹FFTå˜æ¢
 	cr4_fft_256_stm32(lBufOutArray, lBufInArray, NPT);
-	//¼ÆËã³ö¶ÔÓ¦ÆµÂÊµÄÄ£ ¼´Ã¿¸öÆµÂÊ¶ÔÓ¦µÄ·ùÖµ
+	//è®¡ç®—å‡ºå¯¹åº”é¢‘ç‡çš„æ¨¡ å³æ¯ä¸ªé¢‘ç‡å¯¹åº”çš„å¹…å€¼
 	GetPowerMag();	
 }
 
@@ -205,66 +229,6 @@ void getdata(void)
 	save.theme = msg[0];
 	save.animotion = msg[1];
 }
-
-
-u8 key1UpFlag = False;
-u8 key1_fall_flag = False;
-u8 short_key1_flag = False;
-u8 key1_long_down = False;
-u8 long_key1_flag = False;
-int key1_holdon_ms = 0;
-int key1upCnt = 0;
-
-u8 key2UpFlag = False;
-u8 key2_fall_flag = False;
-u8 short_key2_flag = False;
-u8 key2_long_down = False;
-u8 long_key2_flag = False;
-int key2_holdon_ms = 0;
-int key2upCnt = 0;
-
-void KeyProcess(void)
-{
-	if(short_key1_flag)
-	{
-		short_key1_flag=0;
-		save.theme++;			
-		if(save.theme>6)
-			save.theme=1;
-		
-		oled.Display_hbmp(64-81/2,48-26/2,81,26,themetop[save.theme-1],0xFFFF);
-		oled.Refrash_Screen();
-		savedata();
-		oled.Clear_Screen();
-	}
-	else if(key1_long_down)
-	{
-		showfpsflag = 1-showfpsflag;
-		key1_long_down=0;
-	}
-	if(short_key2_flag)
-	{
-		short_key2_flag=0;
-		save.animotion++;			
-		if(save.animotion>6)
-			save.animotion=0;
-		
-		oled.Display_hbmp(64-81/2,48-26/2,81,26,animationtop[save.animotion],0xFFFF);
-		oled.Refrash_Screen();
-		savedata();
-		oled.Clear_Screen();
-	}
-	else if(key2_long_down)
-	{
-		key2_long_down=0;
-		if(save.animotion==7)
-			save.animotion=0;
-		else
-			save.animotion=7;
-		savedata();
-	}
-}
-
 u16 fps = 0;
 char fpschar[20];
 /* USER CODE END 0 */
@@ -322,8 +286,8 @@ int main(void)
 //	DS3231_Time_Init(DS3231_Init_Buf);
 	SPI_Flash_Init();
 //	HAL_RTC_MspInit(&hrtc);
-		ui.SUI_In();
-//  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //ÅäÖÃWAKE UPÖĞ¶Ï,1ÃëÖÓÖĞ¶ÏÒ»´Î
+		
+//  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //é…ç½®WAKE UPä¸­æ–­,1ç§’é’Ÿä¸­æ–­ä¸€æ¬¡
 
   /* USER CODE END 2 */
 
@@ -336,15 +300,15 @@ int main(void)
     /* USER CODE BEGIN 3 */
 //		MUSIC_Mode();
 		oled.Clear_Screen();
-		ui.SUIDataPrss();
+		
 		ui.SUIMainShow();
 //		oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
 //		fps++;
 		oled.Refrash_Screen();
 //		HAL_Delay(10);
 //		
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//À­µÍÊ±ÖÓ¿ªÊ¼Êı¾İ´«Êä
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//À­µÍÊ±ÖÓ¿ªÊ¼Êı¾İ´«Êä
+//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//æ‹‰ä½æ—¶é’Ÿå¼€å§‹æ•°æ®ä¼ è¾“
+//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//æ‹‰ä½æ—¶é’Ÿå¼€å§‹æ•°æ®ä¼ è¾“
 //		IIC_SCL=0;
 //		IIC_SDA=0;
 //		HAL_Delay(100);
@@ -464,110 +428,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	static u16 TimeRun = 0;
 	if (htim->Instance == htim4.Instance)
 	{
-//		if(key1_fall_flag==1)//·¢Éú°´¼ü°´ÏÂÊÂ¼ş
-//		{
-//			if(!HAL_GPIO_ReadPin(KEY_1_GPIO_Port,KEY_1_Pin))//°´¼ü³ÖĞø°´ÏÂ
-//			{         
-//				if(key1_holdon_ms <= 200)  
-//				{
-//					key1_holdon_ms++; 
-//				} 
-//				else //°´¼ü°´ÏÂµ½2000ms¾ÍÅĞ¶Ï³¤°´Ê±¼ä³ÉÁ¢£¬Éú³É³¤°´±êÖ¾ 
-//				{ 
-//					key1_holdon_ms = 0; 
-//					short_key1_flag = 0;//Çå¶Ì°´¼ü±êÖ¾
-//					key1_long_down = 1;//³¤°´¼ü±êÖ¾ÖÃÎ»
-//					key1_fall_flag = 0;//Çå°´¼ü°´ÏÂ±êÖ¾ 
-//				} 
-//			} 
-//			else //°´¼üÌ§Æğ
-//			{ 
-//				if(key1_holdon_ms>5)//°´ÏÂÊ±¼ä´óÓÚ50ms£¬Éú³Éµ¥»÷±êÖ¾
-//				{  
-//					key1_holdon_ms=0;
-//					short_key1_flag=1;
-//					key1_long_down =0;
-//					key1_fall_flag=0;
-
-//					//¾àÀëÉÏ´Îµ¥»÷Ê±¼äÔÚ100~500msÖ®¼ä£¬ÔòÈÏÎª·¢ÉúÁ¬»÷ÊÂ¼ş
-////					if(key1upCnt>100 && key1upCnt<500)
-////					{ 
-////						doubleClick = True;
-////						short_key1_flag=0;
-////					} 
-//					key1UpFlag = True;//µ¥»÷Ì§Æğ°´¼üºó£¬Éú³É°´¼üÌ§Æğ±êÖ¾ 
-//				} 
-//				else  //°´¼ü³ÖĞøÊ±¼äĞ¡ÓÚ50ms£¬ºöÂÔ 
-//				{    
-//					key1_holdon_ms=0; 
-//					short_key1_flag=0;
-//					long_key1_flag=0;
-//					key1_fall_flag=0;
-//				} 
-//			}
-//		}
-//		
-//		if(key1UpFlag)//µ¥»÷Ì§Æğºó£¬Æô¶¯¼ÆÊı£¬¼ÆÊıµ½500ms  
-//			key1upCnt++;
-//		if(key1upCnt>50)
-//		{ 
-//			key1upCnt = 0;
-//			key1UpFlag = False;
-//		}
-//		
-//		
-//		if(key2_fall_flag==1)//·¢Éú°´¼ü°´ÏÂÊÂ¼ş
-//		{
-//			if(!HAL_GPIO_ReadPin(KEY_2_GPIO_Port,KEY_2_Pin))//°´¼ü³ÖĞø°´ÏÂ
-//			{         
-//				if(key2_holdon_ms <= 200)  
-//				{
-//					key2_holdon_ms++; 
-//				} 
-//				else //°´¼ü°´ÏÂµ½2000ms¾ÍÅĞ¶Ï³¤°´Ê±¼ä³ÉÁ¢£¬Éú³É³¤°´±êÖ¾ 
-//				{ 
-//					key2_holdon_ms = 0; 
-//					short_key2_flag=0;//Çå¶Ì°´¼ü±êÖ¾
-//					key2_long_down = 1;//³¤°´¼ü±êÖ¾ÖÃÎ»
-//					key2_fall_flag = 0;//Çå°´¼ü°´ÏÂ±êÖ¾ 
-//				} 
-//			} 
-//			else //°´¼üÌ§Æğ
-//			{ 
-//				if(key2_holdon_ms>5)//°´ÏÂÊ±¼ä´óÓÚ50ms£¬Éú³Éµ¥»÷±êÖ¾
-//				{  
-//					key2_holdon_ms=0;
-//					short_key2_flag=1;
-//					key2_long_down =0;
-//					key2_fall_flag=0;
-
-//					//¾àÀëÉÏ´Îµ¥»÷Ê±¼äÔÚ100~500msÖ®¼ä£¬ÔòÈÏÎª·¢ÉúÁ¬»÷ÊÂ¼ş
-////					if(key2upCnt>100 && key2upCnt<500)
-////					{ 
-////						doubleClick = True;
-////						short_key2_flag=0;
-////					} 
-//					key2UpFlag = True;//µ¥»÷Ì§Æğ°´¼üºó£¬Éú³É°´¼üÌ§Æğ±êÖ¾ 
-//				} 
-//				else  //°´¼ü³ÖĞøÊ±¼äĞ¡ÓÚ50ms£¬ºöÂÔ 
-//				{    
-//					key2_holdon_ms=0; 
-//					short_key2_flag=0;
-//					long_key2_flag=0;
-//					key2_fall_flag=0;
-//				} 
-//			}
-//		}
-//		
-//		if(key2UpFlag)//µ¥»÷Ì§Æğºó£¬Æô¶¯¼ÆÊı£¬¼ÆÊıµ½500ms  
-//			key2upCnt++;
-//		if(key2upCnt>50)
-//		{ 
-//			key2upCnt = 0;
-//			key2UpFlag = False;
-//		}
-		
 		DampAutoPos(0);
+		MainSysRun();
 	}
 	if (htim->Instance == htim5.Instance)
 	{
@@ -579,11 +441,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		oled.Set_Wheel(TimeRun++%96);
 		sprintf(fpschar,"%d",fps);
 		fps = 0;
-//		HAL_RTC_GetTime(&RTC_Handler,&RTC_TimeStruct,RTC_FORMAT_BIN);
-//		printf("Time:%02d:%02d:%02d\r\n",RTC_TimeStruct.Hours,RTC_TimeStruct.Minutes,RTC_TimeStruct.Seconds); 
-//		HAL_RTC_GetDate(&RTC_Handler,&RTC_DateStruct,RTC_FORMAT_BIN);
-//		printf("Date:20%02d-%02d-%02d\r\n",RTC_DateStruct.Year,RTC_DateStruct.Month,RTC_DateStruct.Date); 
-//		printf("Week:%d\r\n",RTC_DateStruct.WeekDay); 
 	}
 //	if (htim->Instance == htim6.Instance)
 //	{
@@ -613,35 +470,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	switch(GPIO_Pin)
 	{
 		case DS_INT_Pin:
-		if(HAL_GPIO_ReadPin(DS_INT_GPIO_Port,DS_INT_Pin)==GPIO_PIN_RESET)  //LED1·­×ª
+		if(HAL_GPIO_ReadPin(DS_INT_GPIO_Port,DS_INT_Pin)==GPIO_PIN_RESET)  //LED1ç¿»è½¬
 		{
 			Time_Handle();
 			printf("Time:%s\r\n",ds3231.Time); 
 		}
 		break;
 	}
-	
-//		case KEY_1_Pin:
-//		if(HAL_GPIO_ReadPin(KEY_1_GPIO_Port,KEY_1_Pin)==GPIO_PIN_RESET)  //LED1·­×ª
-//		{
-//				printf("Key1 Pressed!\r\n"); 
-//				key1_fall_flag = 1;//¿ªÆô°´¼ü±êÖ¾
-//		}
-//		break;
-//		case KEY_2_Pin:
-//		if(HAL_GPIO_ReadPin(KEY_2_GPIO_Port,KEY_2_Pin)==GPIO_PIN_RESET)  //LED1·­×ª
-//		{
-//				printf("Key2 Pressed!\r\n");  
-//				key2_fall_flag = 1;//¿ªÆô°´¼ü±êÖ¾
-//		}
-//		break;
-//	}
 }
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-//	HAL_ADC_Stop_DMA(&hadc1);	//Í£Ö¹ADCµÄDMA´«Êä
+//	HAL_ADC_Stop_DMA(&hadc1);	//åœæ­¢ADCçš„DMAä¼ è¾“
 	FFT_Stop();
-	adc_dma_ok = 1;						//±ê¼ÇADC_DMA´«ÊäÍê³É
+	adc_dma_ok = 1;						//æ ‡è®°ADC_DMAä¼ è¾“å®Œæˆ
 }
 
 /* USER CODE END 4 */
