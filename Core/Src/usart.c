@@ -309,8 +309,8 @@ void Judge_Mode()
 //			normalcount = 10;
 //			gamecount = 0;
 //		}
-//	}
-	Display_Mode = MODE_MENU;
+////	}
+//	Display_Mode = MODE_MENU;
 }
 uint8_t Uart_Recv1_Buf[Uart_Max_Length] = {0};
 uint16_t Uart_Recv1_Length = 0;
@@ -500,14 +500,8 @@ void AnalysisCommand(uint8_t *Buf)
 						Device_Cmd.commandmode = MAKEWORD(Buf[6],Buf[5]); 
 						if(Device_Cmd.commandmode > 1 && Display_Mode != MODE_MENU) 
 						{
-							if(Device_Cmd.commandmode == 2)
-								Display_Mode = DATA_THEME;
-							else
-								Display_Mode = Device_Cmd.commandmode;
+							Display_Mode = Device_Cmd.commandmode;
 						}
-						else if(Display_Mode == MODE_OFFLINE)
-							Display_Mode = DATA_THEME;
-							
 				break;
 				case Command_Motion:
 					if(Device_Cmd.commandmotion != MAKEWORD(Buf[6],Buf[5]))

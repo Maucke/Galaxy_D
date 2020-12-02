@@ -26,9 +26,9 @@ class OLED_GFX : public virtual OLED_Driver {
     
     void Draw_Line(int16_t x0, int16_t y0, int16_t x1, int16_t y1);
     void Draw_Line(int16_t x0, int16_t y0, int16_t x1, int16_t y1,uint16_t color);
-		void Draw_Line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8 with, uint16_t color);
-    void Draw_LineS(int16 *points, uint8 no);
-    void Draw_LineS(int16 *points, uint8 no,uint16_t color);
+		void Draw_Line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t with, uint16_t color);
+    void Draw_LineS(int16_t *points, uint8_t no);
+    void Draw_LineS(int16_t *points, uint8_t no,uint16_t color);
 	
     void Draw_Rect(int16_t x, int16_t y, int16_t w, int16_t h);
     void Draw_Rect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color);
@@ -39,7 +39,7 @@ class OLED_GFX : public virtual OLED_Driver {
     void Fill_Circle(int16_t x0, int16_t y0, int16_t r,uint16_t color);
     void Draw_Circle(int16_t x0, int16_t y0, int16_t r);
     void Draw_Circle(int16_t x0, int16_t y0, int16_t r,uint16_t color);
-		void Draw_Circle(int16_t x0, int16_t y0, int16_t r,u8 Type,uint16_t color);
+		void Draw_Circle(int16_t x0, int16_t y0, int16_t r,uint8_t Type,uint16_t color);
 
     void Draw_RoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r);
     void Draw_RoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r,uint16_t color);

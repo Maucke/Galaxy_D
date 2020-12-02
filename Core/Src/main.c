@@ -66,10 +66,13 @@ uint8_t SystemActive = False;
 u8 datatemp[256] = {};
 u16 RandomX=30,RandomY=30;
 
-u16 Display_Mode = MODE_GAME;
+u16 Display_Mode = MODE_OFFLINE;
 u16 Current_Mode = MODE_OFFLINE;
 
-u16 DATA_THEME = MODE_DATE;
+OLED_GFX oled;
+OLED_FFT fft;
+OLED_Animation motion;
+OLED_UI ui;
 
 void MainSysRun()
 {
@@ -82,6 +85,7 @@ void MainSysRun()
 			case MODE_DATE:ui.NUIDataPrss();break;
 			case MODE_MUSIC:ui.MUIDataPrss();break;
 			case MODE_TIME:ui.TUIDataPrss();break;
+			case MODE_OFFLINE:break;
 			default:ui.SUIDataPrss();break;
 		}
 		
@@ -98,6 +102,7 @@ void MainSysRun()
 				case MODE_DATE:ui.NUI_Out();break;
 				case MODE_MUSIC:ui.MUI_Out();break;
 				case MODE_TIME:ui.TUI_Out();break;
+				case MODE_OFFLINE:break;
 				default:ui.SUI_Out();break;
 			}
 		}
@@ -111,6 +116,7 @@ void MainSysRun()
 				case MODE_DATE:ui.NUI_In();break;
 				case MODE_MUSIC:ui.MUI_In();break;
 				case MODE_TIME:ui.TUI_In();break;
+				case MODE_OFFLINE:break;
 				default:ui.SUI_In();break;
 			}
 		}
@@ -222,10 +228,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-OLED_GFX oled = OLED_GFX();
-OLED_FFT fft = OLED_FFT();
-OLED_Animation motion = OLED_Animation();
-OLED_UI ui;
 
 typedef struct
 {
@@ -305,9 +307,13 @@ int main(void)
 	motion.OLED_AllMotion_Init();
 	FFT_Start();
 	InitData();
+//	UsartCommand(&huart1,0xA002,3);//获取设备名
+//	UsartCommand(&huart1,0xA003,3);//获取硬盘信息
 //	DS3231_Time_Init(DS3231_Init_Buf);
 	SPI_Flash_Init();
+	ui.SUI_In();
 //	HAL_RTC_MspInit(&hrtc);
+	UsartCommand(&huart1,0xA002,3);//获取命令
 		
 //  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断一次
 
@@ -323,12 +329,14 @@ int main(void)
 //		MUSIC_Mode();
 		oled.Clear_Screen();
 		
+		motion.OLED_AllMotion(Device_Cmd.commandmotion,Device_Cmd.commandspeed);
 		switch(Current_Mode)
 		{
 			case MODE_GAME:ui.SUIMainShow();break;
 			case MODE_DATE:ui.NUIMainShow();break;
 			case MODE_MUSIC:ui.MUIMainShow();break;
 			case MODE_TIME:ui.TUIMainShow();break;
+			case MODE_OFFLINE:break;
 			default:ui.SUIMainShow();break;
 		}
 //		oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
@@ -392,65 +400,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint8_t prt = 1;	
-int ip=0;
-void MUSIC_Mode(void)
-{
-	int i;
-  static uint8_t OTheme = 0;
-	if(Flag_Refrash)
-	{
-		Flag_Refrash = False;
-		oled.Clear_Screen();
-		motion.OLED_CustormMotion(6);
-		if(adc_dma_ok)
-		{
-			adc_dma_ok = 0;
-			FFT_Pro();	
-			for(i=0;i<200;i++)
-			{
-				if(lBufMagArray[i]/prt>20)
-					Device_Msg.fft[i] = lBufMagArray[i]/prt;
-				else
-					Device_Msg.fft[i] = lBufMagArray[i]/prt/4;
-			}
-			Device_Msg.leftvol=Device_Msg.fft[1];
-			FFT_Start();
-		}
-		KeyProcess();
-		if(OTheme!=save.theme)
-		{
-			OTheme=save.theme;
-			
-			for(i=0;i<sizeof(fall_pot);i++)
-			{
-				fall_pot[i] = 128;
-				flow_pot[i] = 128;
-			}
-		}
-		
-		
-//		switch(save.theme)
-		switch(2)
-		{
-			case 1:fft.Display_Style1();break;
-			case 2:fft.Display_Style2();break;
-			case 3:fft.Display_Style3();break;
-			case 4:fft.Display_Style4();break;
-			case 5:fft.Display_Style5();break;
-			case 6:fft.Display_Style6();break;
-			default:fft.Display_Style1();break;
-		}
-		
-		fps++;
-		if(1)
-			oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
-		HAL_GPIO_TogglePin(SYSLED_GPIO_Port, SYSLED_Pin);
-		ui.SUIMainShow();
-		oled.Refrash_Screen();
-	}
-	HAL_Delay(1);
-}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -468,8 +417,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (htim->Instance == htim9.Instance)
 	{
 		oled.Set_Wheel(TimeRun++%96);
-		sprintf(fpschar,"%d",fps);
-		fps = 0;
+		oled.Clear_FpsCount();
 	}
 //	if (htim->Instance == htim6.Instance)
 //	{
@@ -502,7 +450,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if(HAL_GPIO_ReadPin(DS_INT_GPIO_Port,DS_INT_Pin)==GPIO_PIN_RESET)  //LED1翻转
 		{
 			Time_Handle();
-			printf("Time:%s\r\n",ds3231.Time); 
+//			printf("Time:%s\r\n",ds3231.Time); 
 		}
 		break;
 	}

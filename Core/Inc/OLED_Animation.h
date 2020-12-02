@@ -46,15 +46,15 @@ extern "C" {
 			void Motion_Triangle(void);
 			void Motion_TriangleF(void);
 			void OLED_AllMotion_Init(void);
-			void OLED_CustormMotion(u8 Channel);
-			void OLED_AllMotion(u8 Type,u16 Speed);
+			void OLED_CustormMotion(uint8_t Channel);
+			void OLED_AllMotion(uint8_t Type,uint16_t Speed);
     private:  
-      OLED_STATUS OLED_MovMind(u8 Index);
-			OLED_STATUS OLED_FucCircle(u8 Index);
-			OLED_STATUS OLED_MovSnowflake(u8 Index);
-			OLED_STATUS OLED_Movmeteor(u8 Index);
-			OLED_STATUS OLED_Planet(u8 Index);
-			OLED_STATUS OLED_Triangle(u8 Index);
+      OLED_STATUS OLED_MovMind(uint8_t Index);
+			OLED_STATUS OLED_FucCircle(uint8_t Index);
+			OLED_STATUS OLED_MovSnowflake(uint8_t Index);
+			OLED_STATUS OLED_Movmeteor(uint8_t Index);
+			OLED_STATUS OLED_Planet(uint8_t Index);
+			OLED_STATUS OLED_Triangle(uint8_t Index);
 
   };
 

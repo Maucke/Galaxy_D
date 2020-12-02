@@ -3,6 +3,7 @@
 #include "main.h"
 #include "gpio.h"
 #include "stdlib.h"
+#include "stdio.h"
 
 
 uint8_t color_byte[2],color_Damp_byte[2];
@@ -307,8 +308,7 @@ int fpscount = 0;
 char fpscountch[20];
 void OLED_Driver::Refrash_Screen(void)  {
   fpscount++;
-  sprintf(fpscountch,"%d",fpscount);
-  oled.OLED_SHFAny(0,0,fpscountch,19,0xffff);
+  OLED_SHFAny(0,0,fpscountch,19,0xffff);
   RAM_Address(0);
   Write_Command(0x5C,0);
 //  for(i=0;i<;i++)  {
@@ -322,6 +322,7 @@ void OLED_Driver::Refrash_Screen(void)  {
 }
   
 void OLED_Driver::Clear_FpsCount(void)  {
+  sprintf(fpscountch,"%d",fpscount);
 	fpscount=0;
 }
 

@@ -62,7 +62,6 @@ extern uint8_t flow_pot[250];
 
 #define True		1		
 #define False		0		
- 
 /*!< STM32F10x Standard Peripheral Library old types (maintained for legacy purpose) */
 typedef int32_t  s32;
 typedef int16_t s16;

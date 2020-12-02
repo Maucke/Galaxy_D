@@ -1,4 +1,5 @@
 #include "OLED_UI.h"
+#include "OLED_FFT.h"
 #include "main.h"
 #include "stdlib.h"
 #include "usart.h"
@@ -274,10 +275,37 @@ void OLED_UI::TUI_Out(){}
 void OLED_UI::TUIDataPrss(){}
 OLED_STATUS OLED_UI::TUIMainShow(){}
 
+extern OLED_FFT fft;
 void OLED_UI::MUI_In(){}
 void OLED_UI::MUI_Out(){}
-void OLED_UI::MUIDataPrss(){}
-OLED_STATUS OLED_UI::MUIMainShow(){}
+void OLED_UI::MUIDataPrss(){
+
+  static uint8_t OTheme = 0;
+	int i;
+	if(OTheme!=Device_Cmd.commandstyle)
+	{
+		OTheme=Device_Cmd.commandstyle;
+		
+		for(i=0;i<sizeof(fall_pot);i++)
+		{
+			fall_pot[i] = 128;
+			flow_pot[i] = 128;
+		}
+	}
+}
+
+OLED_STATUS OLED_UI::MUIMainShow(){
+	switch(Device_Cmd.commandstyle)
+	{
+			case 1:fft.Display_Style1();break;
+			case 2:fft.Display_Style2();break;
+			case 3:fft.Display_Style3();break;
+			case 4:fft.Display_Style4();break;
+			case 5:fft.Display_Style5();break;
+			case 6:fft.Display_Style6();break;
+			default:fft.Display_Style1();break;
+	}
+}
 #ifdef __cplusplus
 }
 #endif

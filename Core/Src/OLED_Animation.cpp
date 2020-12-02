@@ -8,12 +8,12 @@
 extern "C"  {
 #endif
 
-u8 MindNum = 5;
-u8 CircleNum = 1;
-u8 SnowflakeNum = 5;
-u8 MeteoNum = 5;
-u8 PlanetNum = 5;
-u8 TriangleNum = 2;
+uint8_t MindNum = 5;
+uint8_t CircleNum = 1;
+uint8_t SnowflakeNum = 5;
+uint8_t MeteoNum = 5;
+uint8_t PlanetNum = 5;
+uint8_t TriangleNum = 2;
 
 	
 OLED_Animation::OLED_Animation(void) {
@@ -32,7 +32,7 @@ typedef struct
 MTMOVMIND mtmovmind[MINDMAX];
   
 
-OLED_STATUS OLED_Animation::OLED_MovMind(u8 Index)
+OLED_STATUS OLED_Animation::OLED_MovMind(uint8_t Index)
 {
 	if(mtmovmind[Index].x<=3)
 	{	
@@ -137,7 +137,7 @@ typedef struct
 
 MTCIRCLE mtcircle[CIRCLEMAX];
 
-OLED_STATUS OLED_Animation::OLED_FucCircle(u8 Index)
+OLED_STATUS OLED_Animation::OLED_FucCircle(uint8_t Index)
 {
 	if(mtcircle[Index].crt<(mtcircle[Index].x%6+16))
 	{
@@ -211,7 +211,7 @@ typedef struct
 
 MTSNOWFLAKE mtsnowflake[STARMAX];
 
-OLED_STATUS OLED_Animation::OLED_MovSnowflake(u8 Index)
+OLED_STATUS OLED_Animation::OLED_MovSnowflake(uint8_t Index)
 {
 	mtsnowflake[Index].x+= mtsnowflake[Index].dirx;			// 求取两点之间的差值
 	mtsnowflake[Index].y++;
@@ -287,7 +287,7 @@ MTMOVMETEOR mtmovmeteor[METEORMAX];
 #define MOVMETEORDEF 60.0f
 float movmeteorstep = MOVMETEORDEF / SSD1351_HEIGHT;
 
-OLED_STATUS OLED_Animation::OLED_Movmeteor(u8 Index)
+OLED_STATUS OLED_Animation::OLED_Movmeteor(uint8_t Index)
 {
 	mtmovmeteor[Index].y ++;
 	mtmovmeteor[Index].x += movmeteorstep;
@@ -377,7 +377,7 @@ typedef struct
 
 MTPLANET mtplanet[PLANETMAX];
 
-OLED_STATUS OLED_Animation::OLED_Planet(u8 Index){
+OLED_STATUS OLED_Animation::OLED_Planet(uint8_t Index){
 	mtplanet[Index].angle+= mtplanet[Index].spd;
 	if(mtplanet[Index].angle>=360)
 	{
@@ -493,7 +493,7 @@ typedef struct
 
 MTTRIANGLE mttriangle[TRIANGLEMAX];
 
-OLED_STATUS OLED_Animation::OLED_Triangle(u8 Index){
+OLED_STATUS OLED_Animation::OLED_Triangle(uint8_t Index){
 	mttriangle[Index].angle+= mttriangle[Index].spd;
 	
 	mttriangle[Index].x+=mttriangle[Index].dirx;
@@ -640,7 +640,7 @@ void OLED_Animation::OLED_AllMotion_Init(void)
 	Motion_TriangleInit();
 }
 
-void OLED_Animation::OLED_CustormMotion(u8 Channel)
+void OLED_Animation::OLED_CustormMotion(uint8_t Channel)
 {
 	switch(Channel)
 	{
@@ -654,10 +654,10 @@ void OLED_Animation::OLED_CustormMotion(u8 Channel)
 	}
 }
 
-void OLED_Animation::OLED_AllMotion(u8 Type,u16 Speed)
+void OLED_Animation::OLED_AllMotion(uint8_t Type,u16 Speed)
 {
 	static long Count = 0;
-	static u8 NowMotion = 5;
+	static uint8_t NowMotion = 5;
 	static u16 SpeedSave = 0;
 //	OLED_CustormMotion(4);return;
 	if(SpeedSave!=Speed)

@@ -108,7 +108,7 @@ extern "C" {
 			void Calc_Color(void);
 			void MOLED_Fill(uint16_t data);
 		
-			u16 ConvertColor(u8 red,u8 green,u8 blue);
+			uint16_t ConvertColor(uint8_t red,uint8_t green,uint8_t blue);
       void Device_Init(void);
       void Clear_Screen(void);
       void Refrash_Screen(void);
@@ -137,18 +137,19 @@ extern "C" {
       void Draw_FastVLine(int16_t x, int16_t y, int16_t length,uint16_t color);
       void Write_Command(uint8_t data1,uint8_t typ);
 			
-			void Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t color);
-			void Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t color,uint8_t bk);
+			void Display_hbmp(int x,int y,int w,int h,const uint8_t *ch,uint16_t color);
+			void Display_hbmp(int x,int y,int w,int h,const uint8_t *ch,uint16_t color,uint8_t bk);
 			
 			void Set_DampColor(uint16_t color);
 			void Set_Wheel(uint16_t WheelPos);
 			void Set_Wheelf(uint16_t WheelPos);
-			u16 WheelP(u16 WheelPos);
+			uint16_t WheelP(uint16_t WheelPos);
 			
-			void OLED_HFAny(int x,int y,int w,int h,u8 Num,const unsigned char *ch,uint16_t color);
+			void Clear_FpsCount(void);
+			void OLED_HFAny(int x,int y,int w,int h,uint8_t Num,const unsigned char *ch,uint16_t color);
 			void OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color);
     private:  
-      uint8_t Float2U8(float Input);
+      uint8_t Float2uint8_t(float Input);
       void RAM_Address(uint8_t typ);
   };
 
