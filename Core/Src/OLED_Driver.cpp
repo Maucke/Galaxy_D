@@ -303,9 +303,12 @@ void OLED_Driver::RAM_Address(uint8 typ)  {
   Write_Data(0x7f,typ);
 }
 
-
+int fpscount = 0;
+char fpscountch[20];
 void OLED_Driver::Refrash_Screen(void)  {
-  
+  fpscount++;
+  sprintf(fpscountch,"%d",fpscount);
+  oled.OLED_SHFAny(0,0,fpscountch,19,0xffff);
   RAM_Address(0);
   Write_Command(0x5C,0);
 //  for(i=0;i<;i++)  {
@@ -318,6 +321,9 @@ void OLED_Driver::Refrash_Screen(void)  {
 //  }
 }
   
+void OLED_Driver::Clear_FpsCount(void)  {
+	fpscount=0;
+}
 
 void OLED_Driver::Clear_Screen(void)  {
   
