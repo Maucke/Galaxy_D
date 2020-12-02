@@ -264,7 +264,20 @@ OLED_STATUS OLED_UI::SUIMainShow()
 	OLED_SHFAny(12+128,42,Device_Str.gpufan,10,color_now);
 }
 
+void OLED_UI::NUI_In(){}
+void OLED_UI::NUI_Out(){}
+void OLED_UI::NUIDataPrss(){}
+OLED_STATUS OLED_UI::NUIMainShow(){}
 
+void OLED_UI::TUI_In(){}
+void OLED_UI::TUI_Out(){}
+void OLED_UI::TUIDataPrss(){}
+OLED_STATUS OLED_UI::TUIMainShow(){}
+
+void OLED_UI::MUI_In(){}
+void OLED_UI::MUI_Out(){}
+void OLED_UI::MUIDataPrss(){}
+OLED_STATUS OLED_UI::MUIMainShow(){}
 #ifdef __cplusplus
 }
 #endif
