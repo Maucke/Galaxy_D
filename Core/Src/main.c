@@ -66,7 +66,7 @@ uint8_t SystemActive = False;
 u8 datatemp[256] = {};
 u16 RandomX=30,RandomY=30;
 
-u16 Display_Mode = MODE_OFFLINE;
+u16 Display_Mode = MODE_GAME;
 u16 Current_Mode = MODE_OFFLINE;
 
 u16 DATA_THEME = MODE_DATE;
@@ -76,7 +76,15 @@ void MainSysRun()
 	static int runcount=0;
 	if(Display_Mode==Current_Mode)
 	{
-		ui.SUIDataPrss();
+		switch(Current_Mode)
+		{
+			case MODE_GAME:ui.SUIDataPrss();break;
+			case MODE_DATE:ui.NUIDataPrss();break;
+			case MODE_MUSIC:ui.MUIDataPrss();break;
+			case MODE_TIME:ui.TUIDataPrss();break;
+			default:ui.SUIDataPrss();break;
+		}
+		
 		return;
 	}
 	else
@@ -84,13 +92,27 @@ void MainSysRun()
 		runcount++;
 		if(runcount==1)
 		{
-			ui.SUI_Out();
+			switch(Current_Mode)
+			{
+				case MODE_GAME:ui.SUI_Out();;break;
+				case MODE_DATE:ui.NUI_Out();break;
+				case MODE_MUSIC:ui.MUI_Out();break;
+				case MODE_TIME:ui.TUI_Out();break;
+				default:ui.SUI_Out();break;
+			}
 		}
 		else if(runcount>60)
 		{
 			runcount=0;
 			Current_Mode=Display_Mode;
-			ui.SUI_In();
+			switch(Current_Mode)
+			{
+				case MODE_GAME:ui.SUI_In();;break;
+				case MODE_DATE:ui.NUI_In();break;
+				case MODE_MUSIC:ui.MUI_In();break;
+				case MODE_TIME:ui.TUI_In();break;
+				default:ui.SUI_In();break;
+			}
 		}
 	}
 }
@@ -301,7 +323,14 @@ int main(void)
 //		MUSIC_Mode();
 		oled.Clear_Screen();
 		
-		ui.SUIMainShow();
+		switch(Current_Mode)
+		{
+			case MODE_GAME:ui.SUIMainShow();break;
+			case MODE_DATE:ui.NUIMainShow();break;
+			case MODE_MUSIC:ui.MUIMainShow();break;
+			case MODE_TIME:ui.TUIMainShow();break;
+			default:ui.SUIMainShow();break;
+		}
 //		oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
 //		fps++;
 		oled.Refrash_Screen();
