@@ -683,6 +683,30 @@ void OLED_Driver::OLED_BFAny(int x,int y,int w,int h,u8 Num,const unsigned char 
 				if((ch[Num*bnum+w*k+j]>>i)&1)
 					Draw_Pixel(x+j,y+i+k*8,color);
 }
+
+void OLED_Driver::OLED_BFAny(int x,int y,int w,int h,u8 Num,const unsigned char *ch,uint16_t color,uint16_t hui)
+{
+	uint16_t i,j,k;
+	u16 red,green,blue;
+	u16 red1,green1,blue1;
+	
+	red = color>>11;
+	green = (color&0x7E0)>>5;
+	blue = color&0x1F;
+	uint16_t bnum = ((h+7)/8)*w;
+	
+	for(k=0;k<(h+7)/8;k++)//8*k层
+		for(j=0;j<w;j++)//w
+			for(i=0;i<8;i++)
+				if((ch[Num*bnum+w*k+j]>>i)&1)
+				{
+					red1 = red*(hui-abs(j-w/2))/hui;
+					green1 = green*(8-abs(j-w/2))/hui;
+					blue1=blue*(hui-abs(j-w/2))/hui;
+					
+					Draw_Pixel(x+j,y+i+k*8,red1<<11|(green1<<5)|(blue1));
+				}
+}
 	
 	
 extern const unsigned char OCRB_F8x16[];
@@ -707,13 +731,13 @@ void OLED_Driver::OLED_SBFAny(int x,int y,char *ch,int w,uint16_t color)
 		
 		switch(w)
 		{
-			case 8:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;
+			case 8:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color,8);break;
 			case 9:OLED_BFAny(x,y,9,16,c,Self_F9x16,color);break;
 			case 10:OLED_BFAny(x,y,10,16,c,OCR_F10x16,color);break;
 			case 12:OLED_BFAny(x,y,12,16,c,OCR_F12x16,color);break;
-			//case 12:OLED_BFAny(x,y,12,16,c,OCRB_F12x16,color);break;
-			//case 16:OLED_BFAny(x,y,16,24,c,OCR_F16x24,color);break;
-			case 16:OLED_BFAny(x,y,16,24,c,OCRB_F16x24,color);break;
+//			case 12:OLED_BFAny(x,y,12,16,c,OCRB_F12x16,color);break;
+			case 16:OLED_BFAny(x,y,16,24,c,OCR_F16x24,color);break;
+//			case 16:OLED_BFAny(x,y,16,24,c,OCRB_F16x24,color);break;
 			default:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;
 		}
 		x+=w; 

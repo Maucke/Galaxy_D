@@ -265,6 +265,7 @@ OLED_STATUS OLED_UI::SUIMainShow()
 	OLED_SHFAny(9,72,Device_NStr.gpuclock,13,color_now);
 	OLED_SHFAny(9+43,72,Device_NStr.gputemp,13,color_now);
 	OLED_SHFAny(9+86,72,Device_NStr.gpuload,13,color_now);
+	return OLED_IDLE;
 }
 
 void OLED_UI::NUI_In(){
@@ -337,16 +338,29 @@ OLED_STATUS OLED_UI::NUIMainShow(){
 	OLED_SBFAny(30*2,16+pit[24].current-70-50,Device_Str.cpuclock,8,color_now);
 	OLED_SBFAny(30*2,50+2+pit[23].current-90-50,Device_Str.gputemp,8,color_now);
 	OLED_SBFAny(30*2,66+2+pit[24].current-70-50,Device_Str.gpuclock,8,color_now);
+	return OLED_IDLE;
 }
 
 void OLED_UI::TUI_In(){}
 void OLED_UI::TUI_Out(){}
 void OLED_UI::TUIDataPrss(){}
-OLED_STATUS OLED_UI::TUIMainShow(){}
+OLED_STATUS OLED_UI::TUIMainShow(){
+	return OLED_IDLE;}
 
 extern OLED_FFT fft;
-void OLED_UI::MUI_In(){}
-void OLED_UI::MUI_Out(){}
+void OLED_UI::MUI_In(){
+	int i;
+	ClearFFT();
+	for(i=0;i<sizeof(fall_pot);i++)
+	{
+		fall_pot[i] = 128;
+		flow_pot[i] = 128;
+	}
+}
+void OLED_UI::MUI_Out(){
+	ClearFFT();
+}
+
 void OLED_UI::MUIDataPrss(){
 
   static uint8_t OTheme = 0;
@@ -374,6 +388,7 @@ OLED_STATUS OLED_UI::MUIMainShow(){
 			case 6:fft.Display_Style6();break;
 			default:fft.Display_Style1();break;
 	}
+	return OLED_IDLE;
 }
 #ifdef __cplusplus
 }

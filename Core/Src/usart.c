@@ -188,7 +188,7 @@ void ConvertData(void)
 	if(Device_Msg.gpuclock)
 	{
 	sprintf(Device_Str.gpuclock,"%dMhz ",Device_Msg.gpuclock);
-	sprintf(Device_NStr.gpuclock,"%d",Device_Msg.gpuclock/100);
+	sprintf(Device_NStr.gpuclock,"%02d",Device_Msg.gpuclock/100);
 	}
 	sprintf(Device_Str.gpuload,"%02.1f%%  ",(double)Device_Msg.gpuload/10);
 	if(Device_Msg.gpuload<1000)

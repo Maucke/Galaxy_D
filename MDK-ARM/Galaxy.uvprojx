@@ -392,31 +392,6 @@
           <GroupName>Application/User/Core</GroupName>
           <Files>
             <File>
-              <FileName>OLED_FFT.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\Core\Src\OLED_FFT.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>OLED_Driver.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\Core\Src\OLED_Driver.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>OLED_Animation.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\Core\Src\OLED_Animation.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>OLED_GFX.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\Core\Src\OLED_GFX.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>OLED_UI.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\Core\Src\OLED_UI.cpp</FilePath>
-            </File>
-            <File>
               <FileName>cr4_fft_256_stm32.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\Core\Src\cr4_fft_256_stm32.s</FilePath>
@@ -605,6 +580,36 @@
               <FileName>system_stm32f4xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/system_stm32f4xx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>GUI</GroupName>
+          <Files>
+            <File>
+              <FileName>OLED_GFX.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Core\Src\OLED_GFX.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_Animation.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Core\Src\OLED_Animation.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_Driver.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Core\Src\OLED_Driver.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_FFT.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Core\Src\OLED_FFT.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>OLED_UI.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Core\Src\OLED_UI.cpp</FilePath>
             </File>
           </Files>
         </Group>
