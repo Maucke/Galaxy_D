@@ -265,10 +265,49 @@ OLED_STATUS OLED_UI::SUIMainShow()
 	OLED_SHFAny(12+128,42,Device_Str.gpufan,10,color_now);
 }
 
+extern const unsigned char Show_Load[];
+extern const unsigned char Corn_Temp[];
+extern const unsigned char Corn_Freq[];
+extern const unsigned char Corn_Load[];
+extern const unsigned char Corn_CPU[];
+extern const unsigned char Corn_GPU[];
+extern const unsigned char Corn_Coordinate[];
+
+OLED_STATUS OLED_UI::NUICornShow(void)
+{
+	
+	Display_hbmp(23,0,46,38,Corn_CPU);
+	Display_hbmp(23,50+2,46,35,Corn_GPU);
+	
+	Display_hbmp(30,33,32*2,10,Show_Load,color_now);
+	Display_hbmp(30,83+2,32*2,10,Show_Load,color_now);
+	Display_hbmp(24,0,5*2,16,Corn_Temp,color_now);
+	Display_hbmp(24,16,5*2,16,Corn_Freq,color_now);
+	Display_hbmp(24,32,5*2,10,Corn_Load,color_now);
+	Display_hbmp(24,50+2,5*2,16,Corn_Temp,color_now);
+	Display_hbmp(24,66+2,5*2,16,Corn_Freq,color_now);
+	Display_hbmp(24,82+2,5*2,10,Corn_Load,color_now);
+	
+	Display_hbmp(128,1,114,95,Corn_Coordinate,color_now);
+	
+	return OLED_IDLE;
+}
 void OLED_UI::NUI_In(){}
 void OLED_UI::NUI_Out(){}
 void OLED_UI::NUIDataPrss(){}
-OLED_STATUS OLED_UI::NUIMainShow(){}
+OLED_STATUS OLED_UI::NUIMainShow(){
+
+	
+	Draw_Line(0, 47, 127,47, color_half);
+	
+	Fill_Rect(60+2,74,64,10,color_half);
+	Fill_Rect(60+2,88,64,10,color_half);
+	
+	OLED_SHFAny(30*2,0,Device_Str.cputemp,8,color_now);
+	OLED_SHFAny(30*2,16,Device_Str.cpuclock,8,color_now);
+	OLED_SHFAny(30*2,50+2,Device_Str.gputemp,8,color_now);
+	OLED_SHFAny(30*2,66+2,Device_Str.gpuclock,8,color_now);
+}
 
 void OLED_UI::TUI_In(){}
 void OLED_UI::TUI_Out(){}
