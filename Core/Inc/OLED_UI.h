@@ -15,9 +15,6 @@ extern "C" {
     
     public: 
       			OLED_UI(void);
-			OLED_STATUS MtRect(int x,int y,int w,int h,int step,uint16_t color);
-			OLED_STATUS SUITitleShow(int step,uint16_t color);
-			OLED_STATUS SUICornShow(void);
 	  
 			void SUI_In();
 			void SUI_Out();
@@ -40,6 +37,11 @@ extern "C" {
 			OLED_STATUS MUIMainShow();
 		
     private:  
+			OLED_STATUS MtRect(int x,int y,int w,int h,int step,uint16_t color);
+			OLED_STATUS SUITitleShow(int step,uint16_t color);
+			OLED_STATUS SUICornShow(void);
+	  		OLED_STATUS NUICornShow(void);
+	  		OLED_STATUS TUICornShow(void);
   };
 
 
