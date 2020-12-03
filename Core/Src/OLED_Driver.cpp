@@ -670,7 +670,54 @@ void OLED_Driver::OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color)
 	}
 }
 
-
+void OLED_Driver::OLED_BFAny(int x,int y,int w,int h,u8 Num,const unsigned char *ch,uint16_t color)
+{
+	uint16_t i,j,k;
+	uint16_t bnum = ((h+7)/8)*w;
+	
+	for(k=0;k<(h+7)/8;k++)//8*k层
+		for(j=0;j<w;j++)//w
+			for(i=0;i<8;i++)
+				if((ch[Num*bnum+w*k]>>i)&1)
+					Drawpoint(x+j,y+i+k*8,color);
+}
+	
+	
+extern const unsigned char OCRB_F8x16[];
+extern const unsigned char Self_F9x16[];
+extern const unsigned char OCR_F10x16[];
+extern const unsigned char OCR_F12x16[];
+extern const unsigned char OCRB_F12x16[];
+//extern const unsigned char Agency_F12x24[];
+extern const unsigned char OCR_F16x24[];
+extern const unsigned char OCRB_F16x24[];
+//extern const unsigned char Agency_F22x40[];
+//extern const unsigned char Robot_F32x46[];
+//extern const unsigned char RobotT_F32x46[];
+//extern const unsigned char RobotB_F32x46[];	
+	
+void OLED_Driver::OLED_SBFAny(int x,int y,char *ch,int w,uint16_t color)
+{
+	u8 c=0,j=0;
+	while(ch[j]!='\0')
+	{
+		c=ch[j]-' ';
+		
+		switch(w)
+		{
+			case 8:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;
+			case 9:OLED_BFAny(x,y,9,16,c,Self_F9x16,color);break;
+			case 10:OLED_BFAny(x,y,10,16,c,OCR_F10x16,color);break;
+			//case 12:OLED_BFAny(x,y,12,16,c,OCR_F12x16,color);break;
+			case 12:OLED_BFAny(x,y,12,16,c,OCRB_F12x16,color);break;
+			//case 16:OLED_BFAny(x,y,16,24,c,OCR_F16x24,color);break;
+			case 16:OLED_BFAny(x,y,16,24,c,OCRB_F16x24,color);break;
+			default:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;
+		}
+		x+=w; 
+		j++;
+	}
+}
 #ifdef __cplusplus
 }
 #endif
