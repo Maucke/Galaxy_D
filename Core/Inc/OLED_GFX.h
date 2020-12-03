@@ -32,8 +32,8 @@ class OLED_GFX : public virtual OLED_Driver {
 	
     void Draw_Rect(int16_t x, int16_t y, int16_t w, int16_t h);
     void Draw_Rect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color);
-    void Fill_Rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
-    void Fill_Rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h,uint16_t color);
+    void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h);
+    void Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color);
     
     void Fill_Circle(int16_t x0, int16_t y0, int16_t r);
     void Fill_Circle(int16_t x0, int16_t y0, int16_t r,uint16_t color);

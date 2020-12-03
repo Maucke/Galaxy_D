@@ -381,9 +381,9 @@ void OLED_GFX::Draw_Rect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t col
     @brief  Draws a filled rectangle using HW acceleration
 */
 /**************************************************************************/
-void OLED_GFX::Fill_Rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+void OLED_GFX::Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h) {
 
-	uint16_t i,j;
+	int16_t i,j;
   if ((x >= SSD1351_WIDTH) || (y >= SSD1351_HEIGHT))
   return;
 
@@ -407,9 +407,9 @@ void OLED_GFX::Fill_Rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
     @brief  Draws a filled rectangle using HW acceleration
 */
 /**************************************************************************/
-void OLED_GFX::Fill_Rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h,uint16_t color) {
+void OLED_GFX::Fill_Rect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color) {
 
-	uint16_t i,j;
+	int16_t i,j;
   if ((x >= SSD1351_WIDTH) || (y >= SSD1351_HEIGHT))
   return;
 

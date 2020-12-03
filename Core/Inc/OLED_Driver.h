@@ -148,6 +148,8 @@ extern "C" {
 			void Clear_FpsCount(void);
 			void OLED_HFAny(int x,int y,int w,int h,uint8_t Num,const unsigned char *ch,uint16_t color);
 			void OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color);
+			void OLED_BFAny(int x,int y,int w,int h,uint8_t Num,const unsigned char *ch,uint16_t color);
+			void OLED_SBFAny(int x,int y,char *ch,int w,uint16_t color);
     private:  
       uint8_t Float2uint8_t(float Input);
       void RAM_Address(uint8_t typ);

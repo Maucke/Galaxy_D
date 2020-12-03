@@ -645,6 +645,7 @@ void OLED_Driver::OLED_HFAny(int x,int y,int w,int h,u8 Num,const unsigned char 
 
 extern const unsigned char Defu_XF4x5[];
 extern const unsigned char GeForce_10x13[];
+extern const unsigned char GeForce_13x16[];
 extern const unsigned char GeForce_19x23[];
 extern const unsigned char GeForce_25x37[];
 void OLED_Driver::OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color)
@@ -661,6 +662,7 @@ void OLED_Driver::OLED_SHFAny(int x,int y,char *ch,int w,uint16_t color)
 		{
 			case 4:OLED_HFAny(x,y,4,5,c,Defu_XF4x5,color);break;
 			case 10:OLED_HFAny(x,y,10,13,c,GeForce_10x13,color);break;
+			case 13:OLED_HFAny(x,y,13,16,c,GeForce_13x16,color);break;
 			case 19:OLED_HFAny(x,y,19,23,c,GeForce_19x23,color);break;
 			case 25:OLED_HFAny(x,y,25,37,c,GeForce_25x37,color);break;
 			default:OLED_HFAny(x,y,10,13,c,GeForce_10x13,color);break;
@@ -678,8 +680,8 @@ void OLED_Driver::OLED_BFAny(int x,int y,int w,int h,u8 Num,const unsigned char 
 	for(k=0;k<(h+7)/8;k++)//8*k层
 		for(j=0;j<w;j++)//w
 			for(i=0;i<8;i++)
-				if((ch[Num*bnum+w*k]>>i)&1)
-					Drawpoint(x+j,y+i+k*8,color);
+				if((ch[Num*bnum+w*k+j]>>i)&1)
+					Draw_Pixel(x+j,y+i+k*8,color);
 }
 	
 	
@@ -708,8 +710,8 @@ void OLED_Driver::OLED_SBFAny(int x,int y,char *ch,int w,uint16_t color)
 			case 8:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;
 			case 9:OLED_BFAny(x,y,9,16,c,Self_F9x16,color);break;
 			case 10:OLED_BFAny(x,y,10,16,c,OCR_F10x16,color);break;
-			//case 12:OLED_BFAny(x,y,12,16,c,OCR_F12x16,color);break;
-			case 12:OLED_BFAny(x,y,12,16,c,OCRB_F12x16,color);break;
+			case 12:OLED_BFAny(x,y,12,16,c,OCR_F12x16,color);break;
+			//case 12:OLED_BFAny(x,y,12,16,c,OCRB_F12x16,color);break;
 			//case 16:OLED_BFAny(x,y,16,24,c,OCR_F16x24,color);break;
 			case 16:OLED_BFAny(x,y,16,24,c,OCRB_F16x24,color);break;
 			default:OLED_BFAny(x,y,8,16,c,OCRB_F8x16,color);break;

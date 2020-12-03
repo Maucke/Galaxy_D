@@ -190,7 +190,6 @@ typedef struct
 typedef struct
 {
 	char cputemp[10];	
-	char cputempf[10];	
 	char cpuclock[10];	
 	char cpuload[10];	
 	char cpufan[10];	
@@ -206,13 +205,6 @@ typedef struct
 	char ramload[10];	
 	char ramusrdata[10];
 	
-	char ngputemp[10];	
-	char ncpuclock[10];	
-	char ngpufan[10];		
-	char ncpufan[10];	
-	
-	char vcputemp[10];	
-	char vgputemp[10];	
 		
 //	char vtime[10];
 //	char vhour[10];
@@ -320,6 +312,7 @@ typedef struct
 
 extern u8 SaveFlag;
 extern DEVICE_STR Device_Str;
+extern DEVICE_STR Device_NStr;
 extern DEVICE_MSG Device_Msg;
 extern DEVICE_CMD Device_Cmd;
 extern WIFI_MSG WiFi_Msg;

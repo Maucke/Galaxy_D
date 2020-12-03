@@ -184,7 +184,7 @@ OLED_STATUS OLED_UI::SUICornShow(void)
 void OLED_UI::SUI_In()
 {
 	int i;
-	for(i=0;i<12;i++)
+	for(i=0;i<20;i++)
 		SetCurrent(i,0);
 	
 	SetTarget(0,314+4);
@@ -208,7 +208,7 @@ void OLED_UI::SUI_In()
 void OLED_UI::SUI_Out()
 {
 	int i;
-	for(i=0;i<12;i++)
+	for(i=0;i<20;i++)
 		SetTarget(i,0);
 }
 
@@ -251,8 +251,6 @@ OLED_STATUS OLED_UI::SUIMainShow()
 	SUITitleShow(pit[2].current,color_now);
 	SUICornShow();
 	
-	
-	
 	Fill_Rect(2,12,pit[7].current,14,color_half);
 	Fill_Rect(2+128,12,pit[8].current,14,color_half);
 	
@@ -261,10 +259,42 @@ OLED_STATUS OLED_UI::SUIMainShow()
 	
 	Fill_Rect(2+128,74,pit[11].current,19,color_half);
 	
-	OLED_SHFAny(12,42,Device_Str.cpufan,10,color_now);
-	OLED_SHFAny(12+128,42,Device_Str.gpufan,10,color_now);
+	OLED_SHFAny(12,42,Device_NStr.cpufan,10,color_now);
+	OLED_SHFAny(12+128,42,Device_NStr.gpufan,10,color_now);
+	
+	OLED_SHFAny(9,72,Device_NStr.gpuclock,13,color_now);
+	OLED_SHFAny(9+43,72,Device_NStr.gputemp,13,color_now);
+	OLED_SHFAny(9+86,72,Device_NStr.gpuload,13,color_now);
 }
 
+void OLED_UI::NUI_In(){
+	int i;
+	for(i=20+0;i<20+20;i++)
+		SetCurrent(i,0);
+	
+	SetTarget(20+1,100);
+	SetTarget(20+2,150);
+	
+	SetTarget(20+3,90+50);
+	SetTarget(20+4,70+50);
+	SetTarget(20+5,50+50);
+	
+	SetTarget(20+6,-128);
+}
+void OLED_UI::NUI_Out(){
+	int i;
+	for(i=20;i<40;i++)
+		SetTarget(i,0);
+}
+void OLED_UI::NUIDataPrss(){
+
+	if(pit[25].match)
+		SetTarget(20+0,127);
+	
+	SetTarget(27,Device_Msg.cpuload*59/1000);
+	SetTarget(28,Device_Msg.gpuload*59/1000);
+}
+	
 extern const unsigned char Show_Load[];
 extern const unsigned char Corn_Temp[];
 extern const unsigned char Corn_Freq[];
@@ -276,37 +306,37 @@ extern const unsigned char Corn_Coordinate[];
 OLED_STATUS OLED_UI::NUICornShow(void)
 {
 	
-	Display_hbmp(23,0,46,38,Corn_CPU);
-	Display_hbmp(23,50+2,46,35,Corn_GPU);
+	Display_hbmp(pit[21].current-100,4,46,38,Corn_CPU,color_now);
+	Display_hbmp(pit[22].current-150,50+6,46,35,Corn_GPU,color_now);
 	
-	Display_hbmp(30,33,32*2,10,Show_Load,color_now);
-	Display_hbmp(30,83+2,32*2,10,Show_Load,color_now);
-	Display_hbmp(24,0,5*2,16,Corn_Temp,color_now);
-	Display_hbmp(24,16,5*2,16,Corn_Freq,color_now);
-	Display_hbmp(24,32,5*2,10,Corn_Load,color_now);
-	Display_hbmp(24,50+2,5*2,16,Corn_Temp,color_now);
-	Display_hbmp(24,66+2,5*2,16,Corn_Freq,color_now);
-	Display_hbmp(24,82+2,5*2,10,Corn_Load,color_now);
+	Display_hbmp(24*2,0+pit[23].current-90-50,5*2,16,Corn_Temp,color_now);
+	Display_hbmp(24*2,16+pit[24].current-70-50,5*2,16,Corn_Freq,color_now);
 	
-	Display_hbmp(128,1,114,95,Corn_Coordinate,color_now);
+	Display_hbmp(30*2,33+pit[25].current-50-50,32*2,10,Show_Load,color_now);
+	Display_hbmp(24*2,32+pit[25].current-50-50,5*2,10,Corn_Load,color_now);
+	
+	Display_hbmp(24*2,50+2+pit[23].current-90-50,5*2,16,Corn_Temp,color_now);
+	Display_hbmp(24*2,66+2+pit[24].current-70-50,5*2,16,Corn_Freq,color_now);
+	
+	Display_hbmp(30*2,83+2+pit[25].current-50-50,32*2,10,Show_Load,color_now);
+	Display_hbmp(24*2,82+2+pit[25].current-50-50,5*2,10,Corn_Load,color_now);
+	
+	Display_hbmp(128+pit[26].current+128,4,114,91,Corn_Coordinate,color_now);
 	
 	return OLED_IDLE;
 }
-void OLED_UI::NUI_In(){}
-void OLED_UI::NUI_Out(){}
-void OLED_UI::NUIDataPrss(){}
 OLED_STATUS OLED_UI::NUIMainShow(){
 
+	NUICornShow();
+	Draw_Line(0, 47, pit[20].current,47, color_half); 
 	
-	Draw_Line(0, 47, 127,47, color_half);
+	Fill_Rect(62,36+pit[25].current-50-50,pit[26].current,4,color_half);
+	Fill_Rect(62,88+pit[25].current-50-50,pit[27].current,4,color_half);
 	
-	Fill_Rect(60+2,74,64,10,color_half);
-	Fill_Rect(60+2,88,64,10,color_half);
-	
-	OLED_SHFAny(30*2,0,Device_Str.cputemp,8,color_now);
-	OLED_SHFAny(30*2,16,Device_Str.cpuclock,8,color_now);
-	OLED_SHFAny(30*2,50+2,Device_Str.gputemp,8,color_now);
-	OLED_SHFAny(30*2,66+2,Device_Str.gpuclock,8,color_now);
+	OLED_SBFAny(30*2,0+pit[23].current-90-50,Device_Str.cputemp,8,color_now);
+	OLED_SBFAny(30*2,16+pit[24].current-70-50,Device_Str.cpuclock,8,color_now);
+	OLED_SBFAny(30*2,50+2+pit[23].current-90-50,Device_Str.gputemp,8,color_now);
+	OLED_SBFAny(30*2,66+2+pit[24].current-70-50,Device_Str.gpuclock,8,color_now);
 }
 
 void OLED_UI::TUI_In(){}

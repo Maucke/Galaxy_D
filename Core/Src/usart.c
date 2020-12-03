@@ -162,6 +162,7 @@ CLOCK_MSG Clock_Msg;
 DEVICE_CMD Device_Cmd={1,14,6,100,0xa,250,1,170,250,1,5,0xf};
 DEVICE_MSG Device_Msg;
 DEVICE_STR Device_Str;
+DEVICE_STR Device_NStr;
 WIFI_MSG WiFi_Msg;
 
 const char *Week[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
@@ -170,8 +171,8 @@ void ConvertData(void)
 {
 	if(Device_Msg.cputemp)
 	{
-	sprintf(Device_Str.cputemp,"%02d",Device_Msg.cputemp/10);
-	sprintf(Device_Str.cputempf,"%1d",Device_Msg.cputemp%10);
+	sprintf(Device_Str.cputemp,"%02d.%1d$ ",Device_Msg.cputemp/10,Device_Msg.cputemp%10);
+	sprintf(Device_NStr.cputemp,"%02d.%1d",Device_Msg.cputemp/10,Device_Msg.cputemp%10);
 	}
 	if(Device_Msg.cpuclock)
 	sprintf(Device_Str.cpuclock,"%dMhz ",Device_Msg.cpuclock);
@@ -180,10 +181,20 @@ void ConvertData(void)
 	sprintf(Device_Str.cpufan,"%d",Device_Msg.cpufan);
 	
 	if(Device_Msg.gputemp)
+	{
 	sprintf(Device_Str.gputemp,"%02d.%1d$ ",Device_Msg.gputemp/10,Device_Msg.gputemp%10);
+	sprintf(Device_NStr.gputemp,"%02d",Device_Msg.gputemp/10);
+	}
 	if(Device_Msg.gpuclock)
+	{
 	sprintf(Device_Str.gpuclock,"%dMhz ",Device_Msg.gpuclock);
+	sprintf(Device_NStr.gpuclock,"%d",Device_Msg.gpuclock/100);
+	}
 	sprintf(Device_Str.gpuload,"%02.1f%%  ",(double)Device_Msg.gpuload/10);
+	if(Device_Msg.gpuload<1000)
+		sprintf(Device_NStr.gpuload,"%02d",Device_Msg.gpuload/10);
+	else
+		sprintf(Device_NStr.gpuload,"99");
 	if(Device_Msg.gpufan)
 	sprintf(Device_Str.gpufan,"%d",Device_Msg.gpufan);
 	
@@ -198,20 +209,18 @@ void ConvertData(void)
 	sprintf(Device_Str.ramusrdata,"%d",Device_Msg.ramusrdata);
 	
 	if(Device_Msg.cpufan)	
-	sprintf(Device_Str.ncpufan,"%04d",Device_Msg.cpufan);
+	sprintf(Device_NStr.cpufan,"%04d",Device_Msg.cpufan);
 	if(Device_Msg.cpuclock)
-	sprintf(Device_Str.ncpuclock,"%04d",Device_Msg.cpuclock);
+	sprintf(Device_NStr.cpuclock,"%04d",Device_Msg.cpuclock);
 	if(Device_Msg.gpufan)
-	sprintf(Device_Str.ngpufan,"%04d",Device_Msg.gpufan);
-	if(Device_Msg.gputemp)
-	sprintf(Device_Str.ngputemp,"%02d.%1d",Device_Msg.gputemp/10,Device_Msg.gputemp%10);
-	
-	
-	if(Device_Msg.cputemp)
-		sprintf(Device_Str.vcputemp,"%03d#",Device_Msg.cputemp);	
-	if(Device_Msg.gputemp)
-		sprintf(Device_Str.vgputemp,"%03d#",Device_Msg.gputemp);	
-	
+	sprintf(Device_NStr.gpufan,"%04d",Device_Msg.gpufan);
+//	
+//	
+//	if(Device_Msg.cputemp)
+//		sprintf(Device_Str.vcputemp,"%03d#",Device_Msg.cputemp);	
+//	if(Device_Msg.gputemp)
+//		sprintf(Device_Str.vgputemp,"%03d#",Device_Msg.gputemp);	
+//	
 //	sprintf(Device_Str.vhour,"%02d",Device_Msg.uarthour);	
 //	sprintf(Device_Str.vmin,"%02d",Device_Msg.uartminute);	
 //	sprintf(Device_Str.vsec,"%02d",Device_Msg.uartsecond);	
@@ -274,10 +283,12 @@ void InitData(void)
 	sprintf(Device_Str.ramload,"--.-%% ");
 	sprintf(Device_Str.ramusrdata,"----");
 	
-	sprintf(Device_Str.ngputemp,"--.-");	
-	sprintf(Device_Str.ncpuclock,"----");	
-	sprintf(Device_Str.ngpufan,"----");	
-	sprintf(Device_Str.ncpufan,"----");	
+	sprintf(Device_NStr.cputemp,"--");	
+	sprintf(Device_NStr.gputemp,"--");	
+	sprintf(Device_NStr.cpuclock,"----");	
+	sprintf(Device_NStr.gpufan,"----");	
+	sprintf(Device_NStr.cpufan,"----");	
+	sprintf(Device_NStr.gpuclock,"--");	
 	
 	
 //	sprintf(Device_Str.vtime,"--:--");

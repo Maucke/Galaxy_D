@@ -82,7 +82,7 @@ void MainSysRun()
 		switch(Current_Mode)
 		{
 			case MODE_GAME:ui.SUIDataPrss();break;
-			case MODE_DATE:ui.NUIDataPrss();break;
+			case MODE_NORMAL:ui.NUIDataPrss();break;
 			case MODE_MUSIC:ui.MUIDataPrss();break;
 			case MODE_TIME:ui.TUIDataPrss();break;
 			case MODE_OFFLINE:break;
@@ -99,7 +99,7 @@ void MainSysRun()
 			switch(Current_Mode)
 			{
 				case MODE_GAME:ui.SUI_Out();;break;
-				case MODE_DATE:ui.NUI_Out();break;
+				case MODE_NORMAL:ui.NUI_Out();break;
 				case MODE_MUSIC:ui.MUI_Out();break;
 				case MODE_TIME:ui.TUI_Out();break;
 				case MODE_OFFLINE:break;
@@ -113,7 +113,7 @@ void MainSysRun()
 			switch(Current_Mode)
 			{
 				case MODE_GAME:ui.SUI_In();;break;
-				case MODE_DATE:ui.NUI_In();break;
+				case MODE_NORMAL:ui.NUI_In();break;
 				case MODE_MUSIC:ui.MUI_In();break;
 				case MODE_TIME:ui.TUI_In();break;
 				case MODE_OFFLINE:break;
@@ -333,7 +333,7 @@ int main(void)
 		switch(Current_Mode)
 		{
 			case MODE_GAME:ui.SUIMainShow();break;
-			case MODE_DATE:ui.NUIMainShow();break;
+			case MODE_NORMAL:ui.NUIMainShow();break;
 			case MODE_MUSIC:ui.MUIMainShow();break;
 			case MODE_TIME:ui.TUIMainShow();break;
 			case MODE_OFFLINE:break;
