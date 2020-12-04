@@ -375,6 +375,47 @@ OLED_STATUS OLED_UI::NUIMainShow(){
 	return OLED_IDLE;
 }
 
+#define PSIZE 5
+#define PINTERVAL 2
+
+void OLED_UI::OLED_LFPixel(int x,int y,int w,int h,u8 Num,const unsigned char *ch,uint16_t color)
+{
+	uint16_t i,j,k;
+	uint16_t bnum = ((h+7)/8)*w;
+	
+	for(k=0;k<(h+7)/8;k++)//8*k层
+		for(j=0;j<w;j++)//w
+			for(i=0;i<8;i++)
+				if((ch[Num*bnum+w*k+j]>>i)&1)
+				{
+					Fill_Rect(x+j*(PSIZE+PINTERVAL),y+i*(PSIZE+PINTERVAL)+k*8*(PSIZE+PINTERVAL),PSIZE,PSIZE,color);
+				}
+}
+	
+void OLED_UI::OLED_SLFAny(int x,int y,char *ch,int w,uint16_t color)
+{
+	u8 c=0,j=0;
+	while(ch[j]!='\0')
+	{
+		c=ch[j]-' ';
+		
+		switch(w)
+		{
+			case 8:OLED_LFPixel(x,y,8,16,c,OCRB_F8x16,color);break;
+			case 9:OLED_LFPixel(x,y,9,16,c,Self_F9x16,color);break;
+			case 10:OLED_LFPixel(x,y,10,16,c,OCR_F10x16,color);break;
+			case 12:OLED_LFPixel(x,y,12,16,c,OCR_F12x16,color);break;
+//			case 12:OLED_LFPixel(x,y,12,16,c,OCRB_F12x16,color);break;
+			case 16:OLED_LFPixel(x,y,16,24,c,OCR_F16x24,color);break;
+//			case 16:OLED_LFPixel(x,y,16,24,c,OCRB_F16x24,color);break;
+			default:OLED_LFPixel(x,y,8,16,c,OCRB_F8x16,color);break;
+		}
+		x+=w*(PSIZE+PINTERVAL); 
+		j++;
+	}
+}
+
+	
 void OLED_UI::TUI_In(){}
 void OLED_UI::TUI_Out(){}
 void OLED_UI::TUIDataPrss(){}
