@@ -287,6 +287,24 @@ void OLED_UI::NUI_Out(){
 	for(i=20;i<40;i++)
 		SetTarget(i,0);
 }
+	
+	
+void OLED_UI::CoordinateDataPrss(int cycle,int height,int width)
+{
+	static int runcount=0;
+	
+	if(!(runcount%cycle))
+	{
+		runcount=0;
+		for(i=0;i<width/4-1;i++)
+		{
+			pit[30+i].target = pit[30+i+1].target;
+		}
+		pit[30+width/4-1].target = cpuload*height/1000;//最高显示height
+	}
+	runcount++;
+}
+
 void OLED_UI::NUIDataPrss(){
 
 	if(pit[25].match)
@@ -294,8 +312,23 @@ void OLED_UI::NUIDataPrss(){
 	
 	SetTarget(27,Device_Msg.cpuload*59/1000);
 	SetTarget(28,Device_Msg.gpuload*59/1000);
+	
+	CoordinateDataPrss(100,114,91);
 }
 	
+void OLED_UI::DrawCoordinate(int x,int y,int height,int width,uint16_t color)
+{
+	int i;
+	for(i=0;i<width/4;i++)
+	{
+		if(pit[30+i].current)
+		{
+			Draw_Pixel(x+i*3,y-pit[30+i].current,color);
+			if(pit[30+i+1].current)
+				Draw_Line(x+i*3,y-pit[30+i].current,x+(i+1)*3,y-pit[30+i+1].current,color);
+		}
+	}
+}
 extern const unsigned char Show_Load[];
 extern const unsigned char Corn_Temp[];
 extern const unsigned char Corn_Freq[];
@@ -338,6 +371,7 @@ OLED_STATUS OLED_UI::NUIMainShow(){
 	OLED_SBFAny(30*2,16+pit[24].current-70-50,Device_Str.cpuclock,8,color_now);
 	OLED_SBFAny(30*2,50+2+pit[23].current-90-50,Device_Str.gputemp,8,color_now);
 	OLED_SBFAny(30*2,66+2+pit[24].current-70-50,Device_Str.gpuclock,8,color_now);
+	DrawCoordinate(128+pit[26].current+128,4,114,91,color_now);
 	return OLED_IDLE;
 }
 
