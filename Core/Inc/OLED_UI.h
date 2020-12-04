@@ -40,8 +40,12 @@ extern "C" {
 			OLED_STATUS MtRect(int x,int y,int w,int h,int step,uint16_t color);
 			OLED_STATUS SUITitleShow(int step,uint16_t color);
 			OLED_STATUS SUICornShow(void);
-	  		OLED_STATUS NUICornShow(void);
-	  		OLED_STATUS TUICornShow(void);
+			OLED_STATUS NUICornShow(void);
+			OLED_STATUS TUICornShow(void);
+			void CoordinateDataPrss(int cycle,int height,int width);
+			void DrawCoordinate(int x,int y,int height,int width,uint16_t color);
+			void OLED_LFPixel(int x,int y,int w,int h,int psize,int pinterval,u8 Num,const unsigned char *ch,uint16_t color);
+			void OLED_SLFAny(int x,int y,int psize,int pinterval,char *ch,int w,uint16_t color);
   };
 
 

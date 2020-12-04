@@ -24,8 +24,8 @@
 #include <string.h>
 #include "main.h"
 #include "motion.h"
-#include <stdio.h>
 #include "stmflash.h"
+#include "ds3231.h"
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -163,7 +163,6 @@ DEVICE_CMD Device_Cmd={1,14,6,100,0xa,250,1,170,250,1,5,0xf};
 DEVICE_MSG Device_Msg;
 DEVICE_STR Device_Str;
 DEVICE_STR Device_NStr;
-WIFI_MSG WiFi_Msg;
 
 const char *Week[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
@@ -226,44 +225,6 @@ void ConvertData(void)
 //	sprintf(Device_Str.vsec,"%02d",Device_Msg.uartsecond);	
 //	sprintf(Device_Str.date,"%s. %02d-%02d",Week[Device_Msg.uartweek],Device_Msg.uartmonth,Device_Msg.uartday);	
 
-}
-void InitWifi(void)
-{
-	sprintf(WiFi_Msg.weather,"Unknow");
-	WiFi_Msg.weathernum = 67;
-	
-	sprintf(WiFi_Msg.temp,"--$");
-	sprintf(WiFi_Msg.utemp,"--");
-	sprintf(WiFi_Msg.uhumidity,"--");
-	sprintf(WiFi_Msg.humidity,"--%%");
-	sprintf(WiFi_Msg.winddir,"Unknow");
-	sprintf(WiFi_Msg.windpw,"SPD:--m/s");
-	sprintf(WiFi_Msg.reporttime,"No Information");
-	
-	WiFi_Msg.weather1num = 67;
-	sprintf(WiFi_Msg.week1,"Unknow");
-	sprintf(WiFi_Msg.weather1,"Unknow");
-	sprintf(WiFi_Msg.temp1,"--$");
-	sprintf(WiFi_Msg.ntemp1,"--$");
-	sprintf(WiFi_Msg.utemp1,"--");
-	sprintf(WiFi_Msg.untemp1,"--");
-	
-	WiFi_Msg.weather2num = 67;
-	sprintf(WiFi_Msg.week2,"Unknow");
-	sprintf(WiFi_Msg.weather2,"Unknow");
-	sprintf(WiFi_Msg.temp2,"--$");
-	sprintf(WiFi_Msg.ntemp2,"--$");
-	sprintf(WiFi_Msg.utemp2,"--");
-	sprintf(WiFi_Msg.untemp2,"--");
-	
-	WiFi_Msg.weather3num = 67;
-	sprintf(WiFi_Msg.week3,"Unknow");
-	sprintf(WiFi_Msg.weather3,"Unknow");
-	sprintf(WiFi_Msg.temp3,"--$");
-	sprintf(WiFi_Msg.ntemp3,"--$");
-	sprintf(WiFi_Msg.utemp3,"--");
-	sprintf(WiFi_Msg.untemp3,"--");
-	
 }
 void InitData(void)
 {
@@ -418,6 +379,8 @@ void AnalysisComputermsg(uint8_t *Buf)
 				break;
 			case Uart_Second:
 				Device_Msg.uartsecond = MAKEWORD(Buf[6],Buf[5]);
+			
+				DS3231_SetUart();
 //				if(set.autotimeset)
 //				{
 //					own_sec = Device_Msg.uartsecond;

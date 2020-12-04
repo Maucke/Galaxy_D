@@ -369,24 +369,31 @@ void DS3231_Read_Temp(uint8_t *Temp)
 	if(Temp[1] == 0x30)	Temp[1] = 0x20;	//百位为0时不显示
 	if(Temp[2] == 0x30)	Temp[2] = 0x20;	//十位为0时不显示
 }
-//void DS3231_SetUart(void)
-//{
-//	if(Device_MsgNc.uartday&&Device_MsgNc.uartmonth&&Device_MsgNc.uartweek<=7)
-//	{
-//		DS3231_Init_Buf[0] = HEX2BCD(Device_MsgNc.uartsecond);//秒
-//		DS3231_Init_Buf[1] = HEX2BCD(Device_MsgNc.uartminute);//分
-//		DS3231_Init_Buf[2] = HEX2BCD(Device_MsgNc.uarthour);//时
-//		DS3231_Init_Buf[4] = HEX2BCD(Device_MsgNc.uartday);//日
-//		DS3231_Init_Buf[5] = HEX2BCD(Device_MsgNc.uartmonth);//月
-//		if (Device_MsgNc.uartweek == 0)
-//			DS3231_Init_Buf[3] = 7;//星期
-//		else
-//			DS3231_Init_Buf[3] = HEX2BCD(Device_MsgNc.uartweek & 0x7);//星期
-//		DS3231_Init_Buf[6] = HEX2BCD(Device_MsgNc.uartyear - 2000);//年
-//		DS3231_Time_Init(DS3231_Init_Buf);
-////		printf("SetOK\r\n");
-//	}
-//}
+void DS3231_SetUart(void)
+{
+	static int runcount=0;
+	if(!(runcount%600))
+	{
+		runcount=0;
+		
+		if(Device_Msg.uartday&&Device_Msg.uartmonth&&Device_Msg.uartweek<=7)
+		{
+			DS3231_Init_Buf[0] = HEX2BCD(Device_Msg.uartsecond);//秒
+			DS3231_Init_Buf[1] = HEX2BCD(Device_Msg.uartminute);//分
+			DS3231_Init_Buf[2] = HEX2BCD(Device_Msg.uarthour);//时
+			DS3231_Init_Buf[4] = HEX2BCD(Device_Msg.uartday);//日
+			DS3231_Init_Buf[5] = HEX2BCD(Device_Msg.uartmonth);//月
+			if (Device_Msg.uartweek == 0)
+				DS3231_Init_Buf[3] = 7;//星期
+			else
+				DS3231_Init_Buf[3] = HEX2BCD(Device_Msg.uartweek & 0x7);//星期
+			DS3231_Init_Buf[6] = HEX2BCD(Device_Msg.uartyear - 2000);//年
+			DS3231_Time_Init(DS3231_Init_Buf);
+	//		printf("SetOK\r\n");
+		}
+	}
+}
+	
 //int getweek(int y,int m,int d)
 //{
 //	 if(m==1||m==2) m+=12,y=y-1;

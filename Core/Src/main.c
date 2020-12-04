@@ -84,7 +84,8 @@ void MainSysRun()
 			case MODE_GAME:ui.SUIDataPrss();break;
 			case MODE_NORMAL:ui.NUIDataPrss();break;
 			case MODE_MUSIC:ui.MUIDataPrss();break;
-			case MODE_TIME:ui.TUIDataPrss();break;
+			case MODE_DATE:ui.TUIDataPrss();break;
+			case MODE_SHOW:ui.TUIDataPrss();break;
 			case MODE_OFFLINE:break;
 			default:ui.SUIDataPrss();break;
 		}
@@ -101,7 +102,7 @@ void MainSysRun()
 				case MODE_GAME:ui.SUI_Out();;break;
 				case MODE_NORMAL:ui.NUI_Out();break;
 				case MODE_MUSIC:ui.MUI_Out();break;
-				case MODE_TIME:ui.TUI_Out();break;
+				case MODE_DATE:ui.TUI_Out();break;
 				case MODE_OFFLINE:break;
 				default:ui.SUI_Out();break;
 			}
@@ -115,7 +116,7 @@ void MainSysRun()
 				case MODE_GAME:ui.SUI_In();;break;
 				case MODE_NORMAL:ui.NUI_In();break;
 				case MODE_MUSIC:ui.MUI_In();break;
-				case MODE_TIME:ui.TUI_In();break;
+				case MODE_DATE:ui.TUI_In();break;
 				case MODE_OFFLINE:break;
 				default:ui.SUI_In();break;
 			}
@@ -132,19 +133,19 @@ void MainSysRun()
 u16 ColorPointer[3];
 	
 uint8_t adc_dma_ok = 0;					//adc的DMA传输完成标志
-uint32_t adc_buf[NPT]={0};			//用于存储ADC转换结果的数组	
+uint32_t adc_buf[NPT]={0};			//用于存储ADC转换结果的数�?	
 
-static long lBufInArray[NPT];					//传入给FFT的数组
-//long lBufOutArray[NPT/2];				//FFT输出 因为输出结果是对称的 所以我们只取了前面的一半
-//long lBufMagArray[NPT/2];				//每个频率对用的幅值
+static long lBufInArray[NPT];					//传入给FFT的数�?
+//long lBufOutArray[NPT/2];				//FFT输出 因为输出结果是对称的 �?以我们只取了前面的一�?
+//long lBufMagArray[NPT/2];				//每个频率对用的幅�?
 static long lBufOutArray[NPT];				//FFT输出 
-long lBufMagArray[NPT];				//每个频率对用的幅值
+long lBufMagArray[NPT];				//每个频率对用的幅�?
 
 void FFT_Start(void)
 {
 	/*启动ADC的DMA传输，配合定时器触发ADC转换*/
 	HAL_ADC_Start_DMA(&hadc1, adc_buf, NPT);
-	/*开启定时器，用溢出时间来触发ADC*/
+	/*�?启定时器，用溢出时间来触发ADC*/
 	HAL_TIM_Base_Start(&htim3);
 }
 
@@ -152,7 +153,7 @@ void FFT_Stop(void)
 {
 	/*停止ADC的DMA传输*/
 	HAL_ADC_Stop_DMA(&hadc1);
-	/*停止定时器*/
+	/*停止定时�?*/
 	HAL_TIM_Base_Stop(&htim3);
 }
 
@@ -181,7 +182,7 @@ void GetPowerMag(void)
 /* 函数名称：void FFT_Pro(void)
  * 功能描述：FFT处理函数
  * 参数：无
- * 返回值：无
+ * 返回值：�?
  */
 void FFT_Pro(void)
 {
@@ -189,13 +190,13 @@ void FFT_Pro(void)
 	//填充数组
 	for(i=0;i<NPT;i++)
 	{
-		//这里因为单片机的ADC只能测正的电压 所以需要前级加直流偏执
-		//加入直流偏执后 1.25V 对应AD值为3103
+		//这里因为单片机的ADC只能测正的电�? �?以需要前级加直流偏执
+		//加入直流偏执�? 1.25V 对应AD值为3103
 		lBufInArray[i] = ((signed short)(adc_buf[i])-1551) << 18;		
 	}
 	//256点FFT变换
 	cr4_fft_256_stm32(lBufOutArray, lBufInArray, NPT);
-	//计算出对应频率的模 即每个频率对应的幅值
+	//计算出对应频率的�? 即每个频率对应的幅�??
 	GetPowerMag();	
 }
 
@@ -307,7 +308,7 @@ int main(void)
 	motion.OLED_AllMotion_Init();
 	FFT_Start();
 	InitData();
-//	UsartCommand(&huart1,0xA002,3);//获取设备名
+//	UsartCommand(&huart1,0xA002,3);//获取设备�?
 //	UsartCommand(&huart1,0xA003,3);//获取硬盘信息
 //	DS3231_Time_Init(DS3231_Init_Buf);
 	SPI_Flash_Init();
@@ -315,7 +316,7 @@ int main(void)
 //	HAL_RTC_MspInit(&hrtc);
 	UsartCommand(&huart1,0xA002,3);//获取命令
 		
-//  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断一次
+//  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断�?�?
 
   /* USER CODE END 2 */
 
@@ -335,7 +336,7 @@ int main(void)
 			case MODE_GAME:ui.SUIMainShow();break;
 			case MODE_NORMAL:ui.NUIMainShow();break;
 			case MODE_MUSIC:ui.MUIMainShow();break;
-			case MODE_TIME:ui.TUIMainShow();break;
+			case MODE_DATE:ui.TUIMainShow();break;
 			case MODE_OFFLINE:break;
 			default:ui.SUIMainShow();break;
 		}
@@ -344,8 +345,8 @@ int main(void)
 		oled.Refrash_Screen();
 //		HAL_Delay(10);
 //		
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//拉低时钟开始数据传输
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//拉低时钟开始数据传输
+//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//拉低时钟�?始数据传�?
+//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//拉低时钟�?始数据传�?
 //		IIC_SCL=0;
 //		IIC_SDA=0;
 //		HAL_Delay(100);

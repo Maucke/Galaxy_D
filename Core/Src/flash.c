@@ -7,7 +7,7 @@
 //正点原子@ALIENTEK
 //2010/6/13
 //V1.0
-u8 Flash_ROM[152*96];
+//u8 Flash_ROM[152*96];
 
 u16 SPI_FLASH_TYPE=W25Q128;//默认就是25Q64
 //4Kbytes为一个Sector

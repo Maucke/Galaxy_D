@@ -32,7 +32,7 @@ void OLED_Driver::Set_Wheel(u16 WheelPos)	{
 	wheel = WheelPos;
 	if(WheelPos < 32) 
 	{
-		red = 0;
+		red = 16;
 		green = WheelPos;
 		blue = (31 - WheelPos);
 	}
@@ -40,12 +40,12 @@ void OLED_Driver::Set_Wheel(u16 WheelPos)	{
 	{          
 		red = WheelPos-32;
 		green = 32*2-1 - WheelPos;
-		blue = 0;
+		blue = 32;
 	}
 	else
 	{
 		red = (32*3)-1 - WheelPos;
-		green = 0;
+		green = 16;
 		blue = WheelPos-(32*2);
 	}
 	color_Damp_byte[0] = red<<3|(green>>2);
@@ -106,9 +106,7 @@ uint16_t OLED_Driver::RandomColor(void){
 	
 	uint8_t red,green,blue;
 	red = rand();
-	__ASM("NOP");
 	green = rand();
-	__ASM("NOP");
 	blue = rand();
 	return (red<<11|green<<5|blue);
 }

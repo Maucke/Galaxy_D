@@ -2,6 +2,7 @@
 #include "OLED_FFT.h"
 #include "main.h"
 #include "stdlib.h"
+#include "ds3231.h"
 #include "usart.h"
 
 #ifdef __cplusplus
@@ -292,15 +293,15 @@ void OLED_UI::NUI_Out(){
 void OLED_UI::CoordinateDataPrss(int cycle,int height,int width)
 {
 	static int runcount=0;
-	
+	int i;
 	if(!(runcount%cycle))
 	{
 		runcount=0;
-		for(i=0;i<width/4-1;i++)
+		for(i=0;i<width/8-1;i++)
 		{
 			pit[30+i].target = pit[30+i+1].target;
 		}
-		pit[30+width/4-1].target = cpuload*height/1000;//最高显示height
+		pit[30+width/8-1].target = Device_Msg.cpuload*height/1000;//最高显示height
 	}
 	runcount++;
 }
@@ -313,19 +314,23 @@ void OLED_UI::NUIDataPrss(){
 	SetTarget(27,Device_Msg.cpuload*59/1000);
 	SetTarget(28,Device_Msg.gpuload*59/1000);
 	
-	CoordinateDataPrss(100,114,91);
+	CoordinateDataPrss(1000,88,110);
 }
-	
+
+char teststr[20];
 void OLED_UI::DrawCoordinate(int x,int y,int height,int width,uint16_t color)
 {
 	int i;
-	for(i=0;i<width/4;i++)
+	for(i=0;i<width/8;i++)
 	{
 		if(pit[30+i].current)
 		{
-			Draw_Circle(x+i*3,y-pit[30+i].current,2,color);
+//			printf("%d",b);
+//			UsartPrint(&huart1,0xc001,teststr);
+//			HAL_Delay(10);
 			if(pit[30+i+1].current)
-				Draw_Line(x+i*3,y-pit[30+i].current,x+(i+1)*3,y-pit[30+i+1].current,color);
+				Draw_Line(x+i*8,y-pit[30+i].current,x+(i+1)*8,y-pit[30+i+1].current,color_now);
+			Fill_Circle(x+i*8,y-pit[30+i].current,1,color);
 		}
 	}
 }
@@ -371,28 +376,25 @@ OLED_STATUS OLED_UI::NUIMainShow(){
 	OLED_SBFAny(30*2,16+pit[24].current-70-50,Device_Str.cpuclock,8,color_now);
 	OLED_SBFAny(30*2,50+2+pit[23].current-90-50,Device_Str.gputemp,8,color_now);
 	OLED_SBFAny(30*2,66+2+pit[24].current-70-50,Device_Str.gpuclock,8,color_now);
-	DrawCoordinate(128+pit[26].current+128,4,114,91,color_now);
+	DrawCoordinate(128+pit[26].current+128+6,4+91,88,110,0xffff);
 	return OLED_IDLE;
 }
-
-#define PSIZE 5
-#define PINTERVAL 2
-
-void OLED_UI::OLED_LFPixel(int x,int y,int w,int h,u8 Num,const unsigned char *ch,uint16_t color)
+//uint16_t randcolor[100];
+//u8 pointercolor=0;
+void OLED_UI::OLED_LFPixel(int x,int y,int w,int h,int psize,int pinterval,u8 Num,const unsigned char *ch,uint16_t color)
 {
 	uint16_t i,j,k;
 	uint16_t bnum = ((h+7)/8)*w;
-	
 	for(k=0;k<(h+7)/8;k++)//8*k层
 		for(j=0;j<w;j++)//w
 			for(i=0;i<8;i++)
 				if((ch[Num*bnum+w*k+j]>>i)&1)
 				{
-					Fill_Rect(x+j*(PSIZE+PINTERVAL),y+i*(PSIZE+PINTERVAL)+k*8*(PSIZE+PINTERVAL),PSIZE,PSIZE,color);
+					Fill_Rect(x+j*(psize+pinterval),y+i*(psize+pinterval)+k*8*(psize+pinterval),psize,psize,color);
 				}
 }
-	
-void OLED_UI::OLED_SLFAny(int x,int y,char *ch,int w,uint16_t color)
+//	randcolor[(Num*bnum+w*k+j)*8+i]
+void OLED_UI::OLED_SLFAny(int x,int y,int psize,int pinterval,char *ch,int w,uint16_t color)
 {
 	u8 c=0,j=0;
 	while(ch[j]!='\0')
@@ -401,25 +403,49 @@ void OLED_UI::OLED_SLFAny(int x,int y,char *ch,int w,uint16_t color)
 		
 		switch(w)
 		{
-			case 8:OLED_LFPixel(x,y,8,16,c,OCRB_F8x16,color);break;
-			case 9:OLED_LFPixel(x,y,9,16,c,Self_F9x16,color);break;
-			case 10:OLED_LFPixel(x,y,10,16,c,OCR_F10x16,color);break;
-			case 12:OLED_LFPixel(x,y,12,16,c,OCR_F12x16,color);break;
-//			case 12:OLED_LFPixel(x,y,12,16,c,OCRB_F12x16,color);break;
-			case 16:OLED_LFPixel(x,y,16,24,c,OCR_F16x24,color);break;
-//			case 16:OLED_LFPixel(x,y,16,24,c,OCRB_F16x24,color);break;
-			default:OLED_LFPixel(x,y,8,16,c,OCRB_F8x16,color);break;
+			case 8:OLED_LFPixel(x,y,8,16,psize,pinterval,c,OCRB_F8x16,color);break;
+			case 9:OLED_LFPixel(x,y,9,16,psize,pinterval,c,Self_F9x16,color);break;
+			case 10:OLED_LFPixel(x,y,10,16,psize,pinterval,c,OCR_F10x16,color);break;
+			case 12:OLED_LFPixel(x,y,12,16,psize,pinterval,c,OCR_F12x16,color);break;
+//			case 12:OLED_LFPixel(x,y,12,16,psize,pinterval,c,OCRB_F12x16,color);break;
+			case 16:OLED_LFPixel(x,y,16,24,psize,pinterval,c,OCR_F16x24,color);break;
+//			case 16:OLED_LFPixel(x,y,16,psize,pinterval,24,c,OCRB_F16x24,color);break;
+			default:OLED_LFPixel(x,y,8,16,psize,pinterval,c,OCRB_F8x16,color);break;
 		}
-		x+=w*(PSIZE+PINTERVAL); 
+		x+=w*(psize+pinterval); 
 		j++;
 	}
 }
 
 	
-void OLED_UI::TUI_In(){}
-void OLED_UI::TUI_Out(){}
-void OLED_UI::TUIDataPrss(){}
+void OLED_UI::TUI_In(){
+	int i;
+	for(i=40;i<50;i++)
+		SetCurrent(i,0);
+	SetTarget(40,128);
+	SetTarget(41,-128);
+	SetTarget(42,rand()%10-10);
+}
+void OLED_UI::TUI_Out(){
+	int i;
+	for(i=40;i<50;i++)
+		SetTarget(i,0);
+}
+void OLED_UI::TUIDataPrss(){
+	static int oldmin;
+	if(oldmin!=DS3231_US_Buf[2])
+	{
+		oldmin=DS3231_US_Buf[2];
+		SetTarget(40,rand()%5-5+128);
+		SetTarget(41,rand()%10-128);
+		SetTarget(42,rand()%10-10);
+//		for(i=0;i<sizeof(randcolor);i++)
+//			randcolor[i]=RandomColor();
+	}
+}
 OLED_STATUS OLED_UI::TUIMainShow(){
+	OLED_SLFAny(pit[40].current-128,-10+pit[42].current,6,2,ds3231.Hour,8,~color_now);
+	OLED_SLFAny(128+pit[41].current+128,15+pit[42].current,4,2,ds3231.Min,8,color_now);
 	return OLED_IDLE;}
 
 extern OLED_FFT fft;

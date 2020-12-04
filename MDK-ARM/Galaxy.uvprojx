@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4107</DriverSelection>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -337,7 +337,7 @@
               <MiscControls>--cpp11</MiscControls>
               <Define>USE_HAL_DRIVER,USE_HAL_DRIVER,STM32F411xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;                      ../Drivers/STM32F4xx_HAL_Driver/Inc;                      ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                      ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                      ../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;                       ../Drivers/STM32F4xx_HAL_Driver/Inc;                       ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                       ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                       ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -382,9 +382,9 @@
           <GroupName>Application/MDK-ARM</GroupName>
           <Files>
             <File>
-              <FileName>startup_stm32f401xc.s</FileName>
+              <FileName>startup_stm32f411xe.s</FileName>
               <FileType>2</FileType>
-              <FilePath>startup_stm32f401xc.s</FilePath>
+              <FilePath>.\startup_stm32f411xe.s</FilePath>
             </File>
           </Files>
         </Group>

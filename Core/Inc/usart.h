@@ -28,6 +28,7 @@
 
 /* USER CODE BEGIN Includes */
 
+#include <stdio.h>
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;
@@ -215,109 +216,12 @@ typedef struct
 }DEVICE_STR;
 
 
-#define ESP_WeatherNum			0x400
-#define ESP_Weather				0x401
-#define ESP_Temp				0x402
-#define ESP_Humi				0x403
-#define ESP_Wind_Dir			0x404
-#define ESP_Wind_Pw				0x405
-#define ESP_Report_Tm			0x406
-
-#define ESP_D1_WeatherNum		0x410
-#define ESP_D1_Weeek			0x411
-#define ESP_D1_Weather			0x412
-#define ESP_D1_Temp				0x413
-#define ESP_D1_NTemp			0x414
-
-#define ESP_D2_WeatherNum		0x420
-#define ESP_D2_Weeek			0x421
-#define ESP_D2_Weather			0x422
-#define ESP_D2_Temp				0x423
-#define ESP_D2_NTemp			0x424
-
-#define ESP_D3_WeatherNum		0x430
-#define ESP_D3_Weeek			0x431
-#define ESP_D3_Weather			0x432
-#define ESP_D3_Temp				0x433
-#define ESP_D3_NTemp			0x434
-
-#define ESP_Year 	 			0x501
-#define ESP_Month 				0x502
-#define ESP_Day 	  			0x503
-#define ESP_Week 				0x504
-#define ESP_Hour 	  			0x505
-#define ESP_Minute 				0x506
-#define ESP_Second 	  			0x507
-
-#define ESP_Bili_Msg 	  		0x511
-#define ESP_Bili_Fow   			0x512
-
-#define ESP_KEY_MODE 				0x601
-#define ESP_KEY_MENU 				0x602
-#define ESP_KEY_SW 					0x603
-
-#define ESP_Set_Addr  			0x8011
-#define ESP_Set_Uid  			0x8012
-typedef struct
-{
-	u16 weathernum;
-	char weather[10];
-	char temp[10];
-	char utemp[10];
-	char uhumidity[10];
-	char humidity[10];
-	char winddir[10];
-	char windpw[20];
-	char reporttime[20];
-	
-	u16 weather1num;
-	u16 week1num;
-	char week1[10];
-	char weather1[10];
-	char temp1[10];
-	char ntemp1[10];
-	char utemp1[10];
-	char untemp1[10];
-	
-	u16 weather2num;
-	u16 week2num;
-	char week2[10];
-	char weather2[10];
-	char temp2[10];
-	char ntemp2[10];
-	char utemp2[10];
-	char untemp2[10];
-	
-	u16 weather3num;
-	u16 week3num;
-	char week3[10];
-	char weather3[10];
-	char temp3[10];
-	char ntemp3[10];
-	char utemp3[10];
-	char untemp3[10];
-	
-	u16 year;
-	u16 month;
-	u16 day;
-	u16 week;
-	u16 hour;
-	u16 minute;
-	u16 second;
-	
-	u16 bilimsg;
-	char bilifans[10];
-	u16 mode;
-}WIFI_MSG;
-
 extern u8 SaveFlag;
 extern DEVICE_STR Device_Str;
 extern DEVICE_STR Device_NStr;
 extern DEVICE_MSG Device_Msg;
 extern DEVICE_CMD Device_Cmd;
-extern WIFI_MSG WiFi_Msg;
 extern uint8_t OfflineCount;
-extern uint8_t WiFiOfflineCount;
 extern u8 WifiActive;
 /* USER CODE END Private defines */
 
