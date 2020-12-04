@@ -323,7 +323,7 @@ void OLED_UI::DrawCoordinate(int x,int y,int height,int width,uint16_t color)
 	{
 		if(pit[30+i].current)
 		{
-			Draw_Pixel(x+i*3,y-pit[30+i].current,color);
+			Draw_Circle(x+i*3,y-pit[30+i].current,2,color);
 			if(pit[30+i+1].current)
 				Draw_Line(x+i*3,y-pit[30+i].current,x+(i+1)*3,y-pit[30+i+1].current,color);
 		}
