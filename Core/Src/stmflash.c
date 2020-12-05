@@ -31,6 +31,7 @@ u8 STMFLASH_GetFlashSector(u32 addr)
 	else if(addr<ADDR_FLASH_SECTOR_4)return FLASH_SECTOR_3;
 	else if(addr<ADDR_FLASH_SECTOR_5)return FLASH_SECTOR_4;
 	else if(addr<ADDR_FLASH_SECTOR_6)return FLASH_SECTOR_5;
+	return FLASH_SECTOR_5;
 }
 
 //从指定地址开始写入指定长度的数据

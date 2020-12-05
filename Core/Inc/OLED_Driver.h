@@ -108,6 +108,7 @@ extern "C" {
 			void Calc_Color(void);
 			void MOLED_Fill(uint16_t data);
 		
+			void Display_SetDim(uint8_t Light);
 			uint16_t ConvertColor(uint8_t red,uint8_t green,uint8_t blue);
       void Device_Init(void);
       void Clear_Screen(void);
@@ -123,6 +124,7 @@ extern "C" {
       void Set_Color(uint16_t color);
       void Set_FillColor(uint16_t color);
     
+			void Display_bmp(int x,int y,int w,int h,const uint8_t *ch);
       void Invert(bool v);
       void Draw_Pixel(long x, long y);
       void Draw_Pixel(long x, long y,uint16_t color);

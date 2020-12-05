@@ -42,6 +42,7 @@
 #include "ds3231.h"
 #include "i2c.h"
 #include "flash.h"
+#include "vfd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,7 +86,7 @@ void MainSysRun()
 			case MODE_NORMAL:ui.NUIDataPrss();break;
 			case MODE_MUSIC:ui.MUIDataPrss();break;
 			case MODE_DATE:ui.TUIDataPrss();break;
-			case MODE_SHOW:ui.TUIDataPrss();break;
+			case MODE_SHOW:ui.HUIDataPrss();break;
 			case MODE_OFFLINE:break;
 			default:ui.SUIDataPrss();break;
 		}
@@ -103,6 +104,7 @@ void MainSysRun()
 				case MODE_NORMAL:ui.NUI_Out();break;
 				case MODE_MUSIC:ui.MUI_Out();break;
 				case MODE_DATE:ui.TUI_Out();break;
+				case MODE_SHOW:ui.HUI_Out();break;
 				case MODE_OFFLINE:break;
 				default:ui.SUI_Out();break;
 			}
@@ -117,6 +119,7 @@ void MainSysRun()
 				case MODE_NORMAL:ui.NUI_In();break;
 				case MODE_MUSIC:ui.MUI_In();break;
 				case MODE_DATE:ui.TUI_In();break;
+				case MODE_SHOW:ui.HUI_In();break;
 				case MODE_OFFLINE:break;
 				default:ui.SUI_In();break;
 			}
@@ -131,94 +134,13 @@ void MainSysRun()
 #define MinRadius 40
 #define SecRadius 50
 u16 ColorPointer[3];
-	
-uint8_t adc_dma_ok = 0;					//adc的DMA传输完成标志
-uint32_t adc_buf[NPT]={0};			//用于存储ADC转换结果的数�?	
-
-static long lBufInArray[NPT];					//传入给FFT的数�?
-//long lBufOutArray[NPT/2];				//FFT输出 因为输出结果是对称的 �?以我们只取了前面的一�?
-//long lBufMagArray[NPT/2];				//每个频率对用的幅�?
-static long lBufOutArray[NPT];				//FFT输出 
-long lBufMagArray[NPT];				//每个频率对用的幅�?
-
-void FFT_Start(void)
-{
-	/*启动ADC的DMA传输，配合定时器触发ADC转换*/
-	HAL_ADC_Start_DMA(&hadc1, adc_buf, NPT);
-	/*�?启定时器，用溢出时间来触发ADC*/
-	HAL_TIM_Base_Start(&htim3);
-}
-
-void FFT_Stop(void)
-{
-	/*停止ADC的DMA传输*/
-	HAL_ADC_Stop_DMA(&hadc1);
-	/*停止定时�?*/
-	HAL_TIM_Base_Stop(&htim3);
-}
-
-void GetPowerMag(void)
-{
-    signed short lX,lY;
-    float X,Y,Mag;
-    unsigned short i;
-	
-    for(i=0; i<NPT; i++)
-    {
-        lX  = (lBufOutArray[i] << 16) >> 16;
-        lY  = (lBufOutArray[i] >> 16);
-			
-				//除以32768再乘65536是为了符合浮点数计算规律
-        X = NPT * ((float)lX) / 32768;
-        Y = NPT * ((float)lY) / 32768;
-        Mag = sqrt(X * X + Y * Y)*1.0/ NPT;
-        if(i == 0)	
-            lBufMagArray[i] = (unsigned long)(Mag * 32768);
-        else
-            lBufMagArray[i] = (unsigned long)(Mag * 65536);
-    }
-}
-
-/* 函数名称：void FFT_Pro(void)
- * 功能描述：FFT处理函数
- * 参数：无
- * 返回值：�?
- */
-void FFT_Pro(void)
-{
-	uint16_t i = 0;
-	//填充数组
-	for(i=0;i<NPT;i++)
-	{
-		//这里因为单片机的ADC只能测正的电�? �?以需要前级加直流偏执
-		//加入直流偏执�? 1.25V 对应AD值为3103
-		lBufInArray[i] = ((signed short)(adc_buf[i])-1551) << 18;		
-	}
-	//256点FFT变换
-	cr4_fft_256_stm32(lBufOutArray, lBufInArray, NPT);
-	//计算出对应频率的�? 即每个频率对应的幅�??
-	GetPowerMag();	
-}
-
 
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int Count=0;
 
-u8 Dataleng;
-char DataDis[20];
-char DataDisf[3];
-
-u8 showfpsflag = 0;
-//void CopyString(char *ch1,char *ch2)
-//{
-//	int i;
-//	for(i=0;i<cont_str(ch2);i++)
-//		ch1[i]=ch2[i];
-//}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -228,34 +150,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
-typedef struct
-{
-	uint8_t theme;
-	uint8_t animotion;
-} SAVE;
-
-SAVE save={1,1};
-
-
-void savedata(void)
-{
-	u32 msg[2];
-	msg[0] = save.theme;
-	msg[1] = save.animotion;
-	
-	STMFLASH_Write(FLASH_SAVE_ADDR,(u32*)msg,2);
-}
-void getdata(void)
-{
-	u32 msg[2];
-	STMFLASH_Read(FLASH_SAVE_ADDR,(u32*)msg,2);
-	save.theme = msg[0];
-	save.animotion = msg[1];
-}
-u16 fps = 0;
-char fpschar[20];
 /* USER CODE END 0 */
 
 /**
@@ -297,7 +191,6 @@ int main(void)
   MX_SPI3_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-	getdata();
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
   HAL_UART_Receive_DMA(&huart1,Uart_Recv1_Buf,Uart_Max_Length);
 	HAL_TIM_Base_Start_IT(&htim4);
@@ -306,18 +199,12 @@ int main(void)
 	printf("Sys OK!\r\n");
   oled.Device_Init();
 	motion.OLED_AllMotion_Init();
-	FFT_Start();
 	InitData();
-//	UsartCommand(&huart1,0xA002,3);//获取设备�?
-//	UsartCommand(&huart1,0xA003,3);//获取硬盘信息
-//	DS3231_Time_Init(DS3231_Init_Buf);
 	SPI_Flash_Init();
 	ui.SUI_In();
-//	HAL_RTC_MspInit(&hrtc);
-	UsartCommand(&huart1,0xA002,3);//获取命令
+	VFD_Init();
+	UsartCommand(&huart1,0xA002,3);
 		
-//  RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断�?�?
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -329,7 +216,6 @@ int main(void)
     /* USER CODE BEGIN 3 */
 //		MUSIC_Mode();
 		oled.Clear_Screen();
-		
 		motion.OLED_AllMotion(Device_Cmd.commandmotion,Device_Cmd.commandspeed);
 		switch(Current_Mode)
 		{
@@ -337,22 +223,14 @@ int main(void)
 			case MODE_NORMAL:ui.NUIMainShow();break;
 			case MODE_MUSIC:ui.MUIMainShow();break;
 			case MODE_DATE:ui.TUIMainShow();break;
+			case MODE_SHOW:ui.HUIMainShow();break;
 			case MODE_OFFLINE:break;
 			default:ui.SUIMainShow();break;
 		}
-//		oled.OLED_SHFAny(0,0,fpschar,19,0xffff);
-//		fps++;
 		oled.Refrash_Screen();
-//		HAL_Delay(10);
-//		
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SCL_Pin, GPIO_PIN_RESET);//拉低时钟�?始数据传�?
-//    HAL_GPIO_WritePin(DS_SCL_GPIO_Port, DS_SDA_Pin, GPIO_PIN_RESET);//拉低时钟�?始数据传�?
-//		IIC_SCL=0;
-//		IIC_SDA=0;
-//		HAL_Delay(100);
-//		HAL_ADC_Start(&hadc1);
-//		HAL_ADC_PollForConversion(&hadc1, 50);
-//		printf("ADC:%X\r\n",HAL_ADC_GetValue(&hadc1));
+	VFD_Clear();
+	VFD_Display();
+	VFD_Refresh_Vram();
   }
   /* USER CODE END 3 */
 }
@@ -401,10 +279,11 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+u16 offlinecount = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	static u16 TimeRun = 0;
+	
 	if (htim->Instance == htim4.Instance)
 	{
 		DampAutoPos(0);
@@ -419,6 +298,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		oled.Set_Wheel(TimeRun++%96);
 		oled.Clear_FpsCount();
+		if(Display_Mode != MODE_OFFLINE)
+			if(offlinecount++>5)
+				Display_Mode = MODE_OFFLINE;
 	}
 //	if (htim->Instance == htim6.Instance)
 //	{
@@ -456,12 +338,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		break;
 	}
 }
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-//	HAL_ADC_Stop_DMA(&hadc1);	//停止ADC的DMA传输
-	FFT_Stop();
-	adc_dma_ok = 1;						//标记ADC_DMA传输完成
-}
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+//{
+////	HAL_ADC_Stop_DMA(&hadc1);	
+//}
 
 /* USER CODE END 4 */
 

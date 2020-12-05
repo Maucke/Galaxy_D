@@ -11,6 +11,7 @@ uint8_t color_byte[2],color_Damp_byte[2];
 uint16_t wheel;
 uint8_t OLED_GRAM[2][2*96*128];
 uint16_t color_now,color_half,color_min;
+uint8_t dmasendflag = 1;
 
 #ifdef __cplusplus
 extern "C"  {
@@ -32,7 +33,7 @@ void OLED_Driver::Set_Wheel(u16 WheelPos)	{
 	wheel = WheelPos;
 	if(WheelPos < 32) 
 	{
-		red = 16;
+		red = 31;
 		green = WheelPos;
 		blue = (31 - WheelPos);
 	}
@@ -40,12 +41,12 @@ void OLED_Driver::Set_Wheel(u16 WheelPos)	{
 	{          
 		red = WheelPos-32;
 		green = 32*2-1 - WheelPos;
-		blue = 32;
+		blue = 31;
 	}
 	else
 	{
 		red = (32*3)-1 - WheelPos;
-		green = 16;
+		green = 31;
 		blue = WheelPos-(32*2);
 	}
 	color_Damp_byte[0] = red<<3|(green>>2);
@@ -230,7 +231,6 @@ void OLED_Driver::Write_Data(uint8_t dat,uint8_t typ) {
   
 }
 
-uint8_t dmasendflag = 1;
 
 void OLED_Driver::Write_Data(uint8_t* dat_p, long length,uint8_t typ) {
 #if DMA_SPI
@@ -497,6 +497,14 @@ void OLED_Driver::Device_Init(void) {
   Write_Command(0xaf,3);	 //display on
 }
 
+void OLED_Driver::Display_SetDim(u8 Light)
+{
+	if(Light>64) Light = 64;
+  Write_Command(0xC1,3);	
+  Write_Data(3*Light,3);	
+  Write_Data(2*Light,3);
+  Write_Data(3*Light,3);
+}
   
 // Draw a horizontal line ignoring any screen rotation.
 void OLED_Driver::Draw_FastHLine(int16_t x, int16_t y, int16_t length) {
@@ -543,7 +551,18 @@ void OLED_Driver::Draw_FastVLine(int16_t x, int16_t y, int16_t length,uint16_t c
     }
     while(y0+length>=y);
 }
-  
+  void OLED_Driver::Display_bmp(int x,int y,int w,int h,const uint8_t *ch) {
+  int Temp;
+  int i,j;
+  for(i=y;i<y+h;i++)  {
+    for(j=x;j<x+w;j++)  {
+			Temp = (i-y)*w*2+2*(j-x);
+			if((ch[Temp+1]<<8)|ch[Temp])
+				Draw_Pixel(j,i,(ch[Temp+1]<<8)|ch[Temp]); 
+    }
+  }
+} 
+
 void OLED_Driver::Display_hbmp(int x,int y,int w,int h,const u8 *ch,uint16_t color)
 {
 	u16 i,j;

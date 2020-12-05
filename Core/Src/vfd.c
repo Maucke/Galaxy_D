@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include "main.h"
+#include "ds3231.h"
+#include "usart.h"
 
 uint8_t VRAM[24*7][2];
 uint8_t VBAK[24*7][2];
@@ -472,7 +474,7 @@ const uint8_t VFD_NumMt[] =
 
 void VFD_Write(uint8_t w_data)
 {   
-	HAL_SPI_Transmit(&hspi2,&w_data,1,20);
+	HAL_SPI_Transmit(&hspi2,&w_data,1,2000);
 }  
 
 void VFD_WR_WORD(uint16_t DATA) 
@@ -550,13 +552,14 @@ void VFD_Init(void)
 	VFD_Refresh_Vram();
 	VFD_WR_WORD(0x5300);	//亮度设置FF
 	VFD_WR_BYTE(0x70);    //开显示
-#elif MARKC == 1
+#elif GALAXY_D == 1
 	VFD_WR_WORD(0xe006); //设置位
 	VFD_WR_BYTE(0xa6);    //升压
 	VFD_WR_WORD(0xe400);	//亮度
 	VFD_Clear();
 	VFD_Refresh_Vram();
 	VFD_WR_WORD(0xe800);	//开显示
+	VFD_Brightness(0x55);
 #elif TEACH == 1
 	VFD_WR_WORD(0xe00d); //设置位
 	VFD_WR_WORD(0xe400);	//亮度
@@ -574,7 +577,7 @@ void VFD_Brightness(uint16_t Bright)
 		Bright = 0xFF;
 #if GEMINI == 1
 	VFD_WR_WORD(0x5300|Bright);	//亮度设置FF
-#elif MARKC == 1
+#elif GALAXY_D == 1
 	VFD_WR_WORD(0xe400|Bright);	//亮度
 #elif TEACH == 1
 	VFD_WR_WORD(0xe400|Bright);	//亮度
@@ -614,7 +617,7 @@ void VFD_Refresh_Vram(void)
 	for (j = 0; j < 12; j++)
 		VFD_Write(j);
 	HAL_GPIO_WritePin(GPIOB,VFD_STB_Pin, GPIO_PIN_SET);   
-#elif MARKC == 1
+#elif GALAXY_D == 1
 	int i,j;
 	for(j=0;j<7;j++)
 	{
@@ -1095,7 +1098,7 @@ VFD_STATUS VFD_FucBlin(uint8_t Index)
 //		VFD_Point(FucBlin[0][Index],FucBlin[1][Index]-1,1);
 //		break;
 	}
-	Motion[Index]+=0.34;
+	Motion[Index]+=0.34f;
 	if(Motion[Index] > FucBlin[0][Index]%8+13)
 	{
 		Motion[Index] = 0;
@@ -1118,3 +1121,227 @@ void Motion_Blin(void)
 	}
 }
 
+void  GUI_VFD_HLine(uint16_t x0, uint8_t y0, uint16_t x1, u8 color)
+{
+    uint16_t  temp;
+    if(x0>x1)               // 对x0、x1大小进行排列，以便画图
+    {
+        temp = x1;
+        x1 = x0;
+        x0 = temp;
+    }
+    do
+    {
+        VFD_Point(x0, y0, color);   // 逐点显示，描出垂直线
+        x0++;
+    }
+    while(x1>=x0);
+}
+
+void  GUI_VFD_RLine(uint16_t x0, uint8_t y0, uint8_t y1, u8 color)
+{
+    uint8_t  temp;
+    if(y0>y1)       // 对y0、y1大小进行排列，以便画图
+    {
+        temp = y1;
+        y1 = y0;
+        y0 = temp;
+    }
+    do
+    {
+        VFD_Point(x0, y0, color);   // 逐点显示，描出垂直线
+        y0++;
+    }
+    while(y1>=y0);
+}
+/****************************************************************************
+* 名称：GUI_VFD_RectangleFill()
+* 功能：填充矩形。画一个填充的矩形，填充色与边框色一样。
+* 入口参数： x0		矩形左上角的x坐标值
+*           y0		矩形左上角的y坐标值
+*           x1      矩形右下角的x坐标值
+*           y1      矩形右下角的y坐标值
+*           color	填充颜色
+* 出口参数：无
+* 说明：操作失败原因是指定地址超出有效范围。
+****************************************************************************/
+void  GUI_VFD_RectangleFill(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, u8 color)
+{  uint32_t  i;
+
+   /* 先找出矩形左上角与右下角的两个点，保存在(x0,y0)，(x1,y1) */
+   if(x0>x1) 						// 若x0>x1，则x0与x1交换
+   {  i = x0;
+      x0 = x1;
+      x1 = i;
+   }
+   if(y0>y1)						// 若y0>y1，则y0与y1交换
+   {  i = y0;
+      y0 = y1;
+      y1 = i;
+   }
+   
+   /* 判断是否只是直线 */
+   if(y0==y1) 
+   {  GUI_VFD_HLine(x0, y0, x1, color);
+      return;
+   }
+   if(x0==x1) 
+   {  GUI_VFD_RLine(x0, y0, y1, color);
+      return;
+   }
+
+   while(y0<=y1)						
+   {  GUI_VFD_HLine(x0, y0, x1, color);	// 当前画水平线
+      y0++;							// 下一行
+   }
+}
+
+u8 MovRight[] = {0xFF,0xFF,0x40,0x00};
+u8 MovLeft[] = {0x00,0x40,0xFF,0xFF};
+
+void VFD_Load()
+{
+	static u8 Flowleft;
+	if(Display_Mode == MODE_MUSIC)
+	{
+		if(Flowleft < Device_Msg.leftvol*90/65535)
+			Flowleft += 1;
+		else if(Flowleft > Device_Msg.leftvol*90/65535)
+			Flowleft -= 1;
+		if(Flowleft>47) Flowleft = 47;
+		
+		GUI_VFD_RectangleFill(0,1,Flowleft+1,5,1);	
+	}
+}
+
+char VFDTip[12];
+u16 VFDTipCount = 0;
+
+void VFD_Display(void)
+{
+#if GEMINI == 1
+	static u8 Flowleft,FlowRight;
+	static u16 Step = 0;
+	static u16 MotionStep[3] = {0};
+	Step++;
+	if(Display_Mode == MODE_MUSIC)
+	{
+		if(Flowleft < Device_Msg.leftvol*70/65535)
+			Flowleft += 1;
+		else if(Flowleft > Device_Msg.leftvol*70/65535)
+			Flowleft -= 1;
+		
+		if(FlowRight < Device_Msg.rightvol*70/65535)
+			FlowRight += 1;
+		else if(FlowRight > Device_Msg.rightvol*70/65535)
+			FlowRight -= 1;
+			
+//		GUI_VFD_HLine(0,0,2,1);
+//		GUI_VFD_HLine(79,0,81,1);
+		MotionStep[1] = Step%60;
+		if(MotionStep[1]<=14)
+		{
+			GUI_VFD_RLine(1,0,MotionStep[1],1);
+			GUI_VFD_RLine(0,0,MotionStep[1],1);
+			
+			GUI_VFD_RLine(80,0,MotionStep[1],1);
+			GUI_VFD_RLine(81,0,MotionStep[1],1);
+		}
+		else if(MotionStep[1]<=60-7)
+		{
+			GUI_VFD_RLine(1,0,14,1);
+			GUI_VFD_RLine(0,0,14,1);
+			
+			GUI_VFD_RLine(80,0,14,1);
+			GUI_VFD_RLine(81,0,14,1);
+			GUI_VFD_HLine(0,14,2,1);
+			GUI_VFD_HLine(79,14,81,1);
+		}
+		else
+		{
+			
+			GUI_VFD_RLine(1,14-(60-MotionStep[1])*2,14,1);
+			GUI_VFD_RLine(0,14-(60-MotionStep[1])*2,14,1);
+			
+			GUI_VFD_RLine(81,14-(60-MotionStep[1])*2,14,1);
+			GUI_VFD_RLine(80,14-(60-MotionStep[1])*2,14,1);
+			GUI_VFD_HLine(0,14,2,1);
+			GUI_VFD_HLine(79,14,81,1);
+		}
+		
+		
+		GUI_VFD_RectangleFill(3,1,Flowleft+3,5,1);	
+		GUI_VFD_RectangleFill(78,1,81-FlowRight-3,5,1);	
+	}
+	MotionStep[2] = Step%60;
+	if(MotionStep[2]<10)
+	{
+		VFD_Part(MotionStep[2],1,4,1,MovRight);
+		VFD_Part(81-MotionStep[2]-3,1,4,1,MovLeft);
+	}
+	else if(MotionStep[2]<30)
+	{
+//		if(MotionStep[2]/6%2)
+		{
+			VFD_Part(9,1,4,1,MovRight);
+			VFD_Part(81-9-3,1,4,1,MovLeft);
+		}
+	}
+	else if(MotionStep[2]<35)
+	{
+		VFD_Part(9-(MotionStep[2]-30)*2,1,4,1,MovRight);
+		VFD_Part(81-(9-(MotionStep[2]-30)*2)-3,1,4,1,MovLeft);
+	}
+		
+//	HAL_Delay(100);
+	Motion_Blin();
+	if(Display_Mode != MODE_MUSIC)
+	{
+		VFD_Bow(0,5,7,2,1);
+		VFD_Bow(77,5,7,2,2);
+	}
+	if(VFDTipCount>0&&Display_Mode != MODE_MUSIC)
+	{
+		VFDTipCount --;
+		
+		if(VFDTipCount>42)
+			VFD_SF5x7((11-cont_str(VFDTip)%12)/2*7,0,VFDTip,True);
+		else
+			VFD_SF5x7(0-(85-VFDTipCount*2)+(11-cont_str(VFDTip)%12)/2*7,0,VFDTip,False);
+	}
+	else if(Display_Mode != MODE_MUSIC)
+	{
+		sprintf(VFDTip,"%s-%s %s",ds3231.Monm,ds3231.Day,ds3231.Weekm);
+		VFD_SF5x7((12-cont_str(VFDTip)%12)/2*7,0,VFDTip,True);
+	}
+	VFD_SF5x7(2*7,1,ds3231.Time,True);
+#elif GALAXY_D == 1
+	switch(Display_Mode)
+	{
+		case MODE_DEFALUT:
+		VFD_SF5x7(7,0,ds3231.Hour,True);
+		VFD_SF5x7(21,0,ds3231.Min,True);
+		VFD_SF5x7(35,0,ds3231.Sec,True);
+		VFD_PNTTIME();
+		VFD_Bow(0,5,7,2,0);break;
+		case MODE_DATE:
+		VFD_SF5x7(7,0,ds3231.Hour,True);
+		VFD_SF5x7(21,0,ds3231.Min,True);
+		VFD_SF5x7(35,0,ds3231.Sec,True);
+		VFD_PNTTIME();
+		VFD_Bow(0,5,7,2,0);break;
+		case MODE_NORMAL:VFD_SF5x7(0,0,"CPU",True); VFD_SF5x7(7*3,0,Device_Str.cputemp,True);VFD_PNTMSG();break;
+		case MODE_GAME:VFD_SF5x7(0,0,"GPU",True); VFD_SF5x7(7*3,0,Device_Str.gputemp,True);VFD_PNTMSG();break;
+		case MODE_OFFLINE:
+		VFD_SF5x7(7,0,ds3231.Hour,True);
+		VFD_SF5x7(21,0,ds3231.Min,True);
+		VFD_SF5x7(35,0,ds3231.Sec,True);
+		VFD_PNTTIME();
+		VFD_Bow(0,5,7,2,0);break;
+//		case MODE_SLEEP:VFD_Bow(0,47,5,5,1);break;
+		case MODE_SHOW:VFD_Bow(0,47,5,5,1);break;
+		case MODE_MUSIC:VFD_Load();VFD_PNTCls();VFD_Bow(0,47,5,5,1);break;
+		default:Display_Mode = MODE_DEFALUT;break;
+	}
+#endif
+}

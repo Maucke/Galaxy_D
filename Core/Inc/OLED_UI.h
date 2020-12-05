@@ -35,6 +35,11 @@ extern "C" {
 			void MUI_Out();
 			void MUIDataPrss();
 			OLED_STATUS MUIMainShow();
+
+			void HUI_In();
+			void HUI_Out();
+			void HUIDataPrss();
+			OLED_STATUS HUIMainShow();
 		
     private:  
 			OLED_STATUS MtRect(int x,int y,int w,int h,int step,uint16_t color);

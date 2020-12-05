@@ -53,6 +53,7 @@ void VFD_PNTMSG(void);
 void VFD_Bow(u8 X,u8 H,u8 Y,u8 PixNum,u8 Ch);
 void VFD_PNTCls(void);
 
+void VFD_Display(void);
 #endif  
 	 
 	 

@@ -491,6 +491,26 @@ OLED_STATUS OLED_UI::MUIMainShow(){
 	}
 	return OLED_IDLE;
 }
+void OLED_UI::HUI_In(){
+	int i;
+	for(i=50;i<60;i++)
+		SetCurrent(i,0);
+	SetTarget(50,128);
+}
+void OLED_UI::HUI_Out(){
+	int i;
+	for(i=50;i<60;i++)
+		SetTarget(i,0);
+}
+void OLED_UI::HUIDataPrss(){
+}
+OLED_STATUS OLED_UI::HUIMainShow(){
+	oled.Display_bmp(0-128+pit[50].current,-16,128,128,Logo_amd);
+	oled.Display_bmp(128+128-pit[50].current,-16,128,128,Logo_msi);
+	
+	return OLED_IDLE;
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -272,7 +272,7 @@ void USART1_IRQHandler(void)
 		temp  = hdma_usart1_rx.Instance->NDTR;
 		Uart_Recv1_Length =  Uart_Max_Length - temp;
 	//	Uart_Overflow1_Flag = 1;
-		OfflineCount = 0;
+		offlinecount = 0;
 //		CptOnline = True;
 //		if(Flag_Reception)
 //		{

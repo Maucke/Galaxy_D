@@ -37,7 +37,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern uint16_t offlinecount;
 void SLEEP_Mode(void);
 void OFFLINE_Mode(void);
 void NORMAL_MainDisplay(void);
@@ -57,6 +57,7 @@ void TIME_Mode(void);
 extern uint8_t fall_pot[250];	//记录下落点的坐标
 extern uint8_t flow_pot[250];
 
+#define GALAXY_D 1
 #define HIGH 1
 #define LOW 0
 
@@ -175,81 +176,6 @@ extern u8 WiFiOnline;
 #define RLV Radius/2
 	
 #define SLEEPTIME    20*60
-void OFFLINE_Mode_In_Cust(const u8 *ch,u8 time);//time=10
-void SLEEP_Display(void);
-
-void OFFLINE_Mode_In(void);
-void OFFLINE_Mode_Out(void);
-void OFFLINE_Mode(void);
-
-void NORMAL_Mode_In(void);
-void NORMAL_Mode_Out(void);
-void NORMAL_Mode_Run(void);
-void NORMAL_Display(void);
-void NORMAL_Mode(void);
-
-void GAME_Mode_In(void);
-void GAME_Mode_Out(void);
-void GAME_Mode_Run(void);
-void GAME_Display(void);
-void GAME_Mode(void);
-
-void TIME_Mode_In(void);
-void TIME_Mode_Out(void);
-void TIME_Mode_Run(void);
-void TIME_Display(void);
-void TIME_Mode(void);
-
-void TIME_1_Mode_In(void);
-void TIME_1_Mode_Out(void);
-void TIME_1_Display(void);
-void TIME_1_Mode(void);
-
-void TIME_2_Mode_In(void);
-void TIME_2_Mode_Out(void);
-void TIME_2_Mode_Run(void);
-void TIME_2_Display(void);
-void TIME_2_Mode(void);
-
-void BILI_Mode_In(void);
-void BILI_Mode_Out(void);
-void BILI_Mode_Run(void);
-void BILI_Display(void);
-void BILI_Mode(void);
-
-void WEATH_Mode_In(void);
-void WEATH_Mode_Out(void);
-void WEATH_Mode_Run(void);
-void WEATH_Display(void);
-void WEATH_Mode(void);
-
-void MENU_Mode_In(void);
-void MENU_Mode_Out(void);
-void MENU_Mode_Run(void);
-void MENU_Display(void);
-void MENU_Mode(void);
-
-void WEATH_1_Mode_In(void);
-void WEATH_1_Mode_Out(void);
-void WEATH_1_Mode_Run(void);
-void WEATH_1_Display(void);
-void WEATH_1_Mode(void);
-
-void WEATH_2_Mode_In(void);
-void WEATH_2_Mode_Out(void);
-void WEATH_2_Mode_Run(void);
-void WEATH_2_Display(void);
-void WEATH_2_Mode(void);
-
-void MUSIC_Mode_In(void);
-void MUSIC_Mode_Out(void);
-void MUSIC_Mode_Run(void);
-void MUSIC_Display(void);
-void MUSIC_Mode(void);
-
-void WAITWIFI_Mode(void);
-
-void Display_Run(void);
 extern u16 Display_Mode;
 #define MODE_DEFALUT      	0x00
 #define MODE_OFFLINE    	  0x01
@@ -290,21 +216,7 @@ extern u16 MenuCount;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-extern u8 flushok;
-#define NPT 256									//样本数量
-#define PI2 6.28318530717959
-//采样率计算
-//分辨率：Fs/NPT 
-//#define Fs	10000							//FS FFT计算的频率 这个频率和ADC的采样频率绑定起来
-#define Fs	9984								//取9984能出来整数的分辨率 9984/256 = 39Hz
 
-extern uint8_t adc_dma_ok;			//adc的DMA传输完成标志
-extern long lBufMagArray[NPT];	//每个频率对用的幅值
-extern uint32_t adc_buf[NPT];		//adc原始数据
-
-void FFT_Start(void);
-void FFT_Stop(void);
-void FFT_Pro(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

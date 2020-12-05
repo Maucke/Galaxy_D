@@ -80,10 +80,10 @@ void OLED_Animation::Motion_MindInit(void)
 		
 		mtmovmind[i].dirx = (rand()%30-15)*0.1f;
 		mtmovmind[i].diry = (rand()%30-15)*0.1f;
-		if(mtmovmind[i].dirx<0.2&&mtmovmind[i].dirx>-0.2)
-			mtmovmind[i].dirx = 0.5;
-		if(mtmovmind[i].diry<0.2&&mtmovmind[i].diry>-0.2)
-			mtmovmind[i].diry = 0.5;
+		if(mtmovmind[i].dirx<0.2f&&mtmovmind[i].dirx>-0.2f)
+			mtmovmind[i].dirx = 0.5f;
+		if(mtmovmind[i].diry<0.2f&&mtmovmind[i].diry>-0.2f)
+			mtmovmind[i].diry = 0.5f;
 	}
 //	MindNum = 5;
 }
@@ -99,10 +99,10 @@ void OLED_Animation::Motion_Mind(void)
 			mtmovmind[i].color = oled.RandomColor();
 			mtmovmind[i].dirx = (rand()%30-15)*0.1f;
 			mtmovmind[i].diry = (rand()%30-15)*0.1f;
-			if(mtmovmind[i].dirx<0.2&&mtmovmind[i].dirx>-0.2)
-				mtmovmind[i].dirx = 0.5;
-			if(mtmovmind[i].diry<0.2&&mtmovmind[i].diry>-0.2)
-				mtmovmind[i].diry = 0.5;
+			if(mtmovmind[i].dirx<0.2f&&mtmovmind[i].dirx>-0.2f)
+				mtmovmind[i].dirx = 0.5f;
+			if(mtmovmind[i].diry<0.2f&&mtmovmind[i].diry>-0.2f)
+				mtmovmind[i].diry = 0.5f;
 			
 			if(MindNum<MINDMAX )
 			{
@@ -148,7 +148,7 @@ OLED_STATUS OLED_Animation::OLED_FucCircle(uint8_t Index)
 		}
 		oled.Fill_Circle(mtcircle[Index].x,mtcircle[Index].y,mtcircle[Index].r-mtcircle[Index].crt,mtcircle[Index].color);
 		oled.Draw_Circle(mtcircle[Index].x,mtcircle[Index].y,mtcircle[Index].r+mtcircle[Index].crt,color_min);
-		mtcircle[Index].crt+=0.4;
+		mtcircle[Index].crt+=0.4f;
 		return OLED_BUSY;
 	}
 	else
@@ -523,11 +523,11 @@ void OLED_Animation::Motion_TriangleInit(void){
 		mttriangle[i].y = rand()%SSD1351_HEIGHT;	
 		
 		mttriangle[i].dirx = rand()%20*0.1f-1.0f;
-		if(mttriangle[i].dirx<0.2&&mttriangle[i].dirx>-0.2)
-			mttriangle[i].dirx = 0.5;
+		if(mttriangle[i].dirx<0.2f&&mttriangle[i].dirx>-0.2f)
+			mttriangle[i].dirx = 0.5f;
 		mttriangle[i].diry = rand()%20*0.1f-1.0f;
-		if(mttriangle[i].diry<0.2&&mttriangle[i].diry>-0.2)
-			mttriangle[i].diry = 0.5;
+		if(mttriangle[i].diry<0.2f&&mttriangle[i].diry>-0.2f)
+			mttriangle[i].diry = 0.5f;
 		mttriangle[i].delt1 = rand()%60+90;
 		mttriangle[i].delt2 = rand()%60+210;
 		
@@ -559,11 +559,11 @@ void OLED_Animation::Motion_Triangle(void){
 			mttriangle[i].y = rand()%SSD1351_HEIGHT;	
 			
 			mttriangle[i].dirx = rand()%20*0.1f-1.0f;
-			if(mttriangle[i].dirx<0.2&&mttriangle[i].dirx>-0.2)
-				mttriangle[i].dirx = 0.5;
+			if(mttriangle[i].dirx<0.2f&&mttriangle[i].dirx>-0.2f)
+				mttriangle[i].dirx = 0.5f;
 			mttriangle[i].diry = rand()%20*0.1f-1.0f;
-			if(mttriangle[i].diry<0.2&&mttriangle[i].diry>-0.2)
-				mttriangle[i].diry = 0.5;
+			if(mttriangle[i].diry<0.2f&&mttriangle[i].diry>-0.2f)
+				mttriangle[i].diry = 0.5f;
 			mttriangle[i].delt1 = rand()%60+90;
 			mttriangle[i].delt2 = rand()%60+210;
 			
@@ -605,11 +605,11 @@ void OLED_Animation::Motion_TriangleF(void){
 			mttriangle[i].y = rand()%SSD1351_HEIGHT;	
 			
 			mttriangle[i].dirx = rand()%20*0.1f-1.0f;
-			if(mttriangle[i].dirx<0.2&&mttriangle[i].dirx>-0.2)
-				mttriangle[i].dirx = 0.5;
+			if(mttriangle[i].dirx<0.2f&&mttriangle[i].dirx>-0.2f)
+				mttriangle[i].dirx = 0.5f;
 			mttriangle[i].diry = rand()%20*0.1f-1.0f;
-			if(mttriangle[i].diry<0.2&&mttriangle[i].diry>-0.2)
-				mttriangle[i].diry = 0.5;
+			if(mttriangle[i].diry<0.2f&&mttriangle[i].diry>-0.2f)
+				mttriangle[i].diry = 0.5f;
 			mttriangle[i].delt1 = rand()%60+90;
 			mttriangle[i].delt2 = rand()%60+210;
 			
@@ -736,7 +736,10 @@ NowMotion=4;}else {Count=(5000-Speed*40)*5;}   break;
 NowMotion=5;}else {Count=0;}   break;
 		default:Count=0;break;
 	}
-	OLED_CustormMotion(NowMotion);
+	if(Display_Mode==MODE_DATE&&NowMotion==5)
+		OLED_CustormMotion(6);
+	else
+		OLED_CustormMotion(NowMotion);
 }
 
 
