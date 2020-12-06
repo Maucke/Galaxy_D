@@ -177,6 +177,7 @@ extern u8 WiFiOnline;
 	
 #define SLEEPTIME    20*60
 extern u16 Display_Mode;
+extern u16 Current_Mode ;
 #define MODE_DEFALUT      	0x00
 #define MODE_OFFLINE    	  0x01
 #define MODE_DATE    	  		0x02

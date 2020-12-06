@@ -282,8 +282,8 @@ void SystemClock_Config(void)
 u16 offlinecount = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	static u16 TimeRun = 0;
-	
+	static u16 TimeCount = 0;
+	 
 	if (htim->Instance == htim4.Instance)
 	{
 		DampAutoPos(0);
@@ -296,7 +296,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	if (htim->Instance == htim9.Instance)
 	{
-		oled.Set_Wheel(TimeRun++%96);
+		switch(Device_Cmd.commandrgbmode)
+		{
+			case 1:oled.Set_Wheelf(TimeCount%96);break;
+			case 2:oled.Set_Wheel(TimeCount%96);break;
+			case 3:oled.Set_Wheelf(Device_Cmd.commandrgbcolor*96/256);break;
+			default:oled.Set_Wheelf(Device_Cmd.commandrgbcolor*96/256);break;
+		}
+		TimeCount++;
 		oled.Clear_FpsCount();
 		if(Display_Mode != MODE_OFFLINE)
 			if(offlinecount++>5)

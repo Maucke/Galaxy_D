@@ -559,7 +559,6 @@ void VFD_Init(void)
 	VFD_Clear();
 	VFD_Refresh_Vram();
 	VFD_WR_WORD(0xe800);	//开显示
-	VFD_Brightness(0x55);
 #elif TEACH == 1
 	VFD_WR_WORD(0xe00d); //设置位
 	VFD_WR_WORD(0xe400);	//亮度
@@ -1316,7 +1315,12 @@ void VFD_Display(void)
 	}
 	VFD_SF5x7(2*7,1,ds3231.Time,True);
 #elif GALAXY_D == 1
-	switch(Display_Mode)
+	if(Current_Mode!=MODE_OFFLINE)
+		VFD_Brightness(0x55);
+	else
+		VFD_Brightness(0x1);
+		
+	switch(Current_Mode)
 	{
 		case MODE_DEFALUT:
 		VFD_SF5x7(7,0,ds3231.Hour,True);
@@ -1330,8 +1334,8 @@ void VFD_Display(void)
 		VFD_SF5x7(35,0,ds3231.Sec,True);
 		VFD_PNTTIME();
 		VFD_Bow(0,5,7,2,0);break;
-		case MODE_NORMAL:VFD_SF5x7(0,0,"CPU",True); VFD_SF5x7(7*3,0,Device_Str.cputemp,True);VFD_PNTMSG();break;
-		case MODE_GAME:VFD_SF5x7(0,0,"GPU",True); VFD_SF5x7(7*3,0,Device_Str.gputemp,True);VFD_PNTMSG();break;
+		case MODE_NORMAL:VFD_SF5x7(0,0,"CPU",True); VFD_SF5x7(7*3,0,Device_VStr.cputemp,True);VFD_PNTMSG();break;
+		case MODE_GAME:VFD_SF5x7(0,0,"GPU",True); VFD_SF5x7(7*3,0,Device_VStr.gputemp,True);VFD_PNTMSG();break;
 		case MODE_OFFLINE:
 		VFD_SF5x7(7,0,ds3231.Hour,True);
 		VFD_SF5x7(21,0,ds3231.Min,True);
@@ -1341,7 +1345,12 @@ void VFD_Display(void)
 //		case MODE_SLEEP:VFD_Bow(0,47,5,5,1);break;
 		case MODE_SHOW:VFD_Bow(0,47,5,5,1);break;
 		case MODE_MUSIC:VFD_Load();VFD_PNTCls();VFD_Bow(0,47,5,5,1);break;
-		default:Display_Mode = MODE_DEFALUT;break;
+		default:
+		VFD_SF5x7(7,0,ds3231.Hour,True);
+		VFD_SF5x7(21,0,ds3231.Min,True);
+		VFD_SF5x7(35,0,ds3231.Sec,True);
+		VFD_PNTTIME();
+		VFD_Bow(0,5,7,2,0);break;
 	}
 #endif
 }

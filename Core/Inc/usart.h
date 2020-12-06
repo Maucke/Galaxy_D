@@ -219,6 +219,7 @@ typedef struct
 extern u8 SaveFlag;
 extern DEVICE_STR Device_Str;
 extern DEVICE_STR Device_NStr;
+extern DEVICE_STR Device_VStr;
 extern DEVICE_MSG Device_Msg;
 extern DEVICE_CMD Device_Cmd;
 extern uint8_t OfflineCount;

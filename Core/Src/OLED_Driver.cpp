@@ -26,8 +26,33 @@ u16 OLED_Driver::ConvertColor(u8 red,u8 green,u8 blue)
 	return red<<11|green<<6|blue;
 }
 
-
 void OLED_Driver::Set_Wheel(u16 WheelPos)	{
+	
+	uint8_t red,green,blue;
+	wheel = WheelPos;
+	if(WheelPos < 32) 
+	{
+		red = 0;
+		green = WheelPos;
+		blue = (31 - WheelPos);
+	}
+	else if(WheelPos < (32*2)) 
+	{          
+		red = WheelPos-32;
+		green = 32*2-1 - WheelPos;
+		blue = 0;
+	}
+	else
+	{
+		red = (32*3)-1 - WheelPos;
+		green = 0;
+		blue = WheelPos-(32*2);
+	}
+	color_Damp_byte[0] = red<<3|(green>>2);
+	color_Damp_byte[1] = green<<6|blue;
+}
+
+void OLED_Driver::Set_Wheelf(u16 WheelPos)	{
 	
 	uint8_t red,green,blue;
 	wheel = WheelPos;
@@ -52,6 +77,7 @@ void OLED_Driver::Set_Wheel(u16 WheelPos)	{
 	color_Damp_byte[0] = red<<3|(green>>2);
 	color_Damp_byte[1] = green<<6|blue;
 }
+
 void OLED_Driver::Calc_Color(void){
 				
 	uint8_t red,green,blue;

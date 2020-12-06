@@ -163,11 +163,16 @@ DEVICE_CMD Device_Cmd={1,14,6,100,0xa,250,1,170,250,1,5,0xf};
 DEVICE_MSG Device_Msg;
 DEVICE_STR Device_Str;
 DEVICE_STR Device_NStr;
+DEVICE_STR Device_VStr;
 
 const char *Week[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 void ConvertData(void)
 {
+	if(Device_Msg.cputemp)
+		sprintf(Device_VStr.cputemp,"%03d#",Device_Msg.cputemp);	
+	if(Device_Msg.gputemp)
+		sprintf(Device_VStr.gputemp,"%03d#",Device_Msg.gputemp);	
 	if(Device_Msg.cputemp)
 	{
 	sprintf(Device_Str.cputemp,"%02d.%1d$ ",Device_Msg.cputemp/10,Device_Msg.cputemp%10);
