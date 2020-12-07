@@ -213,7 +213,7 @@ MTSNOWFLAKE mtsnowflake[STARMAX];
 
 OLED_STATUS OLED_Animation::OLED_MovSnowflake(uint8_t Index)
 {
-	mtsnowflake[Index].x+= mtsnowflake[Index].dirx;			// ÇóÈ¡Á½µãÖ®¼äµÄ²îÖµ
+	mtsnowflake[Index].x+= mtsnowflake[Index].dirx;			// æ±‚å–ä¸¤ç‚¹ä¹‹é—´çš„å·®å€¼
 	mtsnowflake[Index].y++;
 	if(mtsnowflake[Index].y>SSD1351_HEIGHT||mtsnowflake[Index].x>SSD1351_WIDTH||mtsnowflake[Index].y<0||mtsnowflake[Index].x<0)
 		return OLED_IDLE;
@@ -366,13 +366,13 @@ void OLED_Animation::Motion_Movmeteor(void)
 
 typedef struct
 {
-	int r;//ÐÐÐÇ´óÐ¡
-	u16 color;//ÐÐÐÇÑÕÉ«		
-	float spd;//ÐÐÐÇ×ªËÙ
-	float orb;//ÐÐÐÇÔËÐÐ¹ìµÀ
-	float angle;//ÐÐÐÇÔËÐÐ½Ç¶È
-	float x;//ÐÐÐÇX
-	float y;	//ÐÐÐÇY
+	int r;//è¡Œæ˜Ÿå¤§å°
+	u16 color;//è¡Œæ˜Ÿé¢œè‰²		
+	float spd;//è¡Œæ˜Ÿè½¬é€Ÿ
+	float orb;//è¡Œæ˜Ÿè¿è¡Œè½¨é“
+	float angle;//è¡Œæ˜Ÿè¿è¡Œè§’åº¦
+	float x;//è¡Œæ˜ŸX
+	float y;	//è¡Œæ˜ŸY
 }MTPLANET;
 
 MTPLANET mtplanet[PLANETMAX];
@@ -423,18 +423,18 @@ void OLED_Animation::Motion_Planet(void){
 	{
 		if(OLED_Planet(i) == OLED_IDLE)
 		{
-			mtplanet[i].r = rand()%4+1;	//ÐÐÐÇ´óÐ¡
+			mtplanet[i].r = rand()%4+1;	//è¡Œæ˜Ÿå¤§å°
 				__ASM("NOP");
-			mtplanet[i].color = oled.RandomColor();		//ÐÐÐÇÑÕÉ«		
+			mtplanet[i].color = oled.RandomColor();		//è¡Œæ˜Ÿé¢œè‰²		
 				__ASM("NOP");										
-			mtplanet[i].spd = float(rand()%20+10)/5;	//ÐÐÐÇ×ªËÙ
+			mtplanet[i].spd = float(rand()%20+10)/5;	//è¡Œæ˜Ÿè½¬é€Ÿ
 				__ASM("NOP");
-			mtplanet[i].orb = rand()%60+4;	//ÐÐÐÇÔËÐÐ¹ìµÀ
+			mtplanet[i].orb = rand()%60+4;	//è¡Œæ˜Ÿè¿è¡Œè½¨é“
 				__ASM("NOP");
-			mtplanet[i].angle = 0;	//ÐÐÐÇÔËÐÐ½Ç¶È
+			mtplanet[i].angle = 0;	//è¡Œæ˜Ÿè¿è¡Œè§’åº¦
 			
-			mtplanet[i].x = 0;	//ÐÐÐÇX
-			mtplanet[i].y = 0;	//ÐÐÐÇY
+			mtplanet[i].x = 0;	//è¡Œæ˜ŸX
+			mtplanet[i].y = 0;	//è¡Œæ˜ŸY
 			
 			if(PlanetNum<PLANETMAX )
 			{
@@ -459,7 +459,10 @@ void OLED_Animation::Motion_Planet(void){
 				if(mtplanet[i].r==1||mtplanet[j].r==1)
 					;
 				else
+				{
 					oled.Draw_Line(mtplanet[j].x,mtplanet[j].y,mtplanet[i].x,mtplanet[i].y,color_half);
+					oled.Draw_Line(mtplanet[j].x+128,mtplanet[j].y,mtplanet[i].x,mtplanet[i].y,color_half);
+				}
 			}
 		}
 	}
@@ -473,18 +476,19 @@ void OLED_Animation::Motion_Planet(void){
 	for(i=0;i<PlanetNum;i++)
 	{
 		oled.Fill_Circle(mtplanet[i].x,mtplanet[i].y,mtplanet[i].r,mtplanet[i].color);
+		oled.Fill_Circle(mtplanet[i].x+128,mtplanet[i].y,mtplanet[i].r,mtplanet[i].color);
 	}
 	
 }
 
 typedef struct
 {
-	int r;//ÍâÇÐÔ²°ë¾¶
-	u16 color;//Èý½ÇÐÎÑÕÉ«		
-	float spd;//Èý½ÇÐÎ×ªËÙ
-	float angle;//Èý½ÇÐÎ½Ç¶È
-	float x;  //ÐÐÐÇX
-	float y;	//ÐÐÐÇY
+	int r;//å¤–åˆ‡åœ†åŠå¾„
+	u16 color;//ä¸‰è§’å½¢é¢œè‰²		
+	float spd;//ä¸‰è§’å½¢è½¬é€Ÿ
+	float angle;//ä¸‰è§’å½¢è§’åº¦
+	float x;  //è¡Œæ˜ŸX
+	float y;	//è¡Œæ˜ŸY
 	float dirx;
 	float diry;
 	float delt1;
@@ -517,7 +521,7 @@ void OLED_Animation::Motion_TriangleInit(void){
 			__ASM("NOP");										
 		mttriangle[i].spd = float(rand()%20+10)/15;
 			__ASM("NOP");
-		mttriangle[i].angle = rand()%60;	//ÔËÐÐ½Ç¶È30 150 270
+		mttriangle[i].angle = rand()%60;	//è¿è¡Œè§’åº¦30 150 270
 		
 		mttriangle[i].x = rand()%SSD1351_WIDTH;	
 		mttriangle[i].y = rand()%SSD1351_HEIGHT;	
@@ -553,7 +557,7 @@ void OLED_Animation::Motion_Triangle(void){
 				__ASM("NOP");										
 			mttriangle[i].spd = float(rand()%20+10)/15;
 				__ASM("NOP");
-			mttriangle[i].angle = rand()%60;	//ÔËÐÐ½Ç¶È30 150 270
+			mttriangle[i].angle = rand()%60;	//è¿è¡Œè§’åº¦30 150 270
 			
 			mttriangle[i].x = rand()%SSD1351_WIDTH;	
 			mttriangle[i].y = rand()%SSD1351_HEIGHT;	
@@ -599,7 +603,7 @@ void OLED_Animation::Motion_TriangleF(void){
 				__ASM("NOP");										
 			mttriangle[i].spd = float(rand()%20+10)/15;
 				__ASM("NOP");
-			mttriangle[i].angle = rand()%60;	//ÔËÐÐ½Ç¶È30 150 270
+			mttriangle[i].angle = rand()%60;	//è¿è¡Œè§’åº¦30 150 270
 			
 			mttriangle[i].x = rand()%SSD1351_WIDTH;	
 			mttriangle[i].y = rand()%SSD1351_HEIGHT;	
