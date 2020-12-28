@@ -84,14 +84,14 @@ extern uint16_t color_now,color_half,color_min;
 
 typedef unsigned short uint16_t;
 typedef unsigned char  uint8_t;
-typedef unsigned char  uint8;                   /* defined for unsigned 8-bits integer variable 	ÎŞ·ûºÅ8Î»ÕûĞÍ±äÁ¿  */
-typedef signed   char  int8;                    /* defined for signed 8-bits integer variable		ÓĞ·ûºÅ8Î»ÕûĞÍ±äÁ¿  */
-typedef unsigned short uint16;                  /* defined for unsigned 16-bits integer variable 	ÎŞ·ûºÅ16Î»ÕûĞÍ±äÁ¿ */
-typedef signed   short int16;                   /* defined for signed 16-bits integer variable 		ÓĞ·ûºÅ16Î»ÕûĞÍ±äÁ¿ */
-typedef unsigned int   uint32;                  /* defined for unsigned 32-bits integer variable 	ÎŞ·ûºÅ32Î»ÕûĞÍ±äÁ¿ */
-typedef signed   int   int32;                   /* defined for signed 32-bits integer variable 		ÓĞ·ûºÅ32Î»ÕûĞÍ±äÁ¿ */
-typedef float          fp32;                    /* single precision floating point variable (32bits) µ¥¾«¶È¸¡µãÊı£¨32Î»³¤¶È£© */
-typedef double         fp64;                    /* double precision floating point variable (64bits) Ë«¾«¶È¸¡µãÊı£¨64Î»³¤¶È£© */
+typedef unsigned char  uint8;                   /* defined for unsigned 8-bits integer variable 	æ— ç¬¦å·8ä½æ•´å‹å˜é‡  */
+typedef signed   char  int8;                    /* defined for signed 8-bits integer variable		æœ‰ç¬¦å·8ä½æ•´å‹å˜é‡  */
+typedef unsigned short uint16;                  /* defined for unsigned 16-bits integer variable 	æ— ç¬¦å·16ä½æ•´å‹å˜é‡ */
+typedef signed   short int16;                   /* defined for signed 16-bits integer variable 		æœ‰ç¬¦å·16ä½æ•´å‹å˜é‡ */
+typedef unsigned int   uint32;                  /* defined for unsigned 32-bits integer variable 	æ— ç¬¦å·32ä½æ•´å‹å˜é‡ */
+typedef signed   int   int32;                   /* defined for signed 32-bits integer variable 		æœ‰ç¬¦å·32ä½æ•´å‹å˜é‡ */
+typedef float          fp32;                    /* single precision floating point variable (32bits) å•ç²¾åº¦æµ®ç‚¹æ•°ï¼ˆ32ä½é•¿åº¦ï¼‰ */
+typedef double         fp64;                    /* double precision floating point variable (64bits) åŒç²¾åº¦æµ®ç‚¹æ•°ï¼ˆ64ä½é•¿åº¦ï¼‰ */
 
 extern uint8_t color_byte[2];
 extern uint8_t color_fill_byte[2];
@@ -131,6 +131,8 @@ extern "C" {
     
       void Write_Data(uint8_t dat,uint8_t typ);
       void Write_Data(uint8_t* dat_p, long length,uint8_t typ);
+      void Write_Data(uint8_t dat);
+      void Write_Data(uint8_t* dat_p, long length);
     
       void Draw_FastHLine(int16_t x, int16_t y, int16_t length);
       void Draw_FastHLine(int16_t x, int16_t y, int16_t length,uint16_t color);
@@ -138,6 +140,7 @@ extern "C" {
       void Draw_FastVLine(int16_t x, int16_t y, int16_t length);
       void Draw_FastVLine(int16_t x, int16_t y, int16_t length,uint16_t color);
       void Write_Command(uint8_t data1,uint8_t typ);
+      void Write_Command(uint8_t data1);
 			
 			void Display_hbmp(int x,int y,int w,int h,const uint8_t *ch,uint16_t color);
 			void Display_hbmp(int x,int y,int w,int h,const uint8_t *ch,uint16_t color,uint8_t bk);
