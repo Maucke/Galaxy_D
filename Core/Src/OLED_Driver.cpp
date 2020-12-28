@@ -209,6 +209,43 @@ void OLED_Driver::Write_Command(uint8_t cmd,uint8_t typ)  {
 	}
 }
 
+void OLED_Driver::Write_Command(uint8_t cmd)  {
+  
+OLED_CS(GPIO_PIN_RESET);OLED_CS1(GPIO_PIN_RESET);
+
+  
+#if  INTERFACE_4WIRE_SPI
+  
+  OLED_DC(GPIO_PIN_RESET);
+  
+  while(HAL_SPI_Transmit(&hspi1,&cmd,0x01,0x10) != HAL_OK);
+  
+  OLED_DC(GPIO_PIN_SET);
+  
+#elif INTERFACE_3WIRE_SPI
+  
+  uint8_t i;
+	uint16_t hwData = 0;
+	
+  hwData = (uint16_t)cmd & ~0x0100;
+
+	for(i = 0; i < 9; i ++) {
+		OLED_SCK(GPIO_PIN_RESET);
+    if(hwData & 0x0100) {
+      OLED_DIN(GPIO_PIN_SET);
+		}
+    else  {
+      OLED_DIN(GPIO_PIN_RESET);
+		}
+    OLED_SCK(GPIO_PIN_SET);
+		hwData <<= 1;
+	}
+
+  
+#endif
+	OLED_CS(GPIO_PIN_SET);OLED_CS1(GPIO_PIN_SET);
+}
+
 
 void OLED_Driver::Write_Data(uint8_t dat,uint8_t typ) {
   
@@ -255,6 +292,42 @@ void OLED_Driver::Write_Data(uint8_t dat,uint8_t typ) {
 		default:OLED_CS(GPIO_PIN_SET);OLED_CS1(GPIO_PIN_SET);break;
 	}
   
+}
+
+void OLED_Driver::Write_Data(uint8_t dat) {
+  
+		default:OLED_CS(GPIO_PIN_RESET);OLED_CS1(GPIO_PIN_RESET);
+  
+#if  INTERFACE_4WIRE_SPI
+  
+  OLED_DC(GPIO_PIN_SET);
+  
+  while(HAL_SPI_Transmit(&hspi1,&dat,0x01,0x10) != HAL_OK);
+  
+  OLED_DC(GPIO_PIN_RESET);
+  
+#elif INTERFACE_3WIRE_SPI
+  
+  uint8_t i;
+	uint16_t hwData = 0;
+	
+  hwData = (uint16_t)dat | 0x0100;
+	
+	for(i = 0; i < 9; i ++) {
+    OLED_SCK(GPIO_PIN_RESET);
+		if(hwData & 0x0100) {
+      OLED_DIN(GPIO_PIN_SET);
+		}
+    else  {
+      OLED_DIN(GPIO_PIN_RESET);
+		}
+    OLED_SCK(GPIO_PIN_SET);
+		hwData <<= 1;
+	}
+  
+#endif
+  
+	OLED_CS(GPIO_PIN_SET);OLED_CS1(GPIO_PIN_SET);
 }
 
 
@@ -315,6 +388,50 @@ void OLED_Driver::Write_Data(uint8_t* dat_p, long length,uint8_t typ) {
 	}
 #endif
 }
+
+void OLED_Driver::Write_Data(uint8_t* dat_p, long length) {
+#if DMA_SPI
+  while(!dmasendflag);
+#endif
+OLED_CS(GPIO_PIN_RESET);OLED_CS1(GPIO_PIN_RESET);
+#if INTERFACE_4WIRE_SPI
+  
+  OLED_DC(GPIO_PIN_SET);
+#if DMA_SPI
+  HAL_SPI_Transmit_DMA(&hspi1,dat_p,length);
+	dmasendflag = 0;
+#else
+  while(HAL_SPI_Transmit(&hspi1,dat_p,length,0x10) != HAL_OK);
+	
+  OLED_DC(GPIO_PIN_RESET);
+OLED_CS(GPIO_PIN_SET);OLED_CS1(GPIO_PIN_SET);
+#endif
+  
+#elif INTERFACE_3WIRE_SPI
+  
+  uint8_t i,j;
+	uint16_t hwData = 0;
+	
+
+  for(i = 0; i < length; i++) {
+    
+    hwData = (uint16_t)dat_p[i] | 0x0100;
+    
+    for(j = 0; j < 9; j ++) {
+      OLED_SCK(GPIO_PIN_RESET);
+      if(hwData & 0x0100) {
+        OLED_DIN(GPIO_PIN_SET);
+      } else {
+        OLED_DIN(GPIO_PIN_RESET);
+      }
+      OLED_SCK(GPIO_PIN_SET);
+      hwData <<= 1;
+    }
+  }
+OLED_CS(GPIO_PIN_SET);OLED_CS1(GPIO_PIN_SET);
+#endif
+}
+
 
 
 void OLED_Driver::RAM_Address(uint8 typ)  {
